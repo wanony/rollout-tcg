@@ -42,6 +42,26 @@ services:
       timeout: 3s
       retries: 5
 
+  identity-service:
+    build:
+      context: .
+      dockerfile: src/IdentityService/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5001
+      ConnectionStrings__IdentityDb: "Host=postgres;Port=5432;Database=db_identity;Username=tcg;Password=dev"
+    ports:
+      - "5001:5001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5001/.well-known/openid-configuration || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
 volumes:
   postgres_data:
   rabbitmq_data:
