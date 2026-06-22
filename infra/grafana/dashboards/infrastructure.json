@@ -1,0 +1,61 @@
+{
+  "title": "TCGTrading - Infrastructure",
+  "uid": "tcg-infrastructure",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "15s",
+  "panels": [
+    {
+      "id": 1,
+      "title": ".NET GC Collections/s",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum(rate(process_runtime_dotnet_gc_collections_count_total[5m])) by (generation, service_name)",
+          "legendFormat": "{{service_name}} gen{{generation}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "GC Heap Size (bytes)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "process_runtime_dotnet_gc_heap_size_bytes",
+          "legendFormat": "{{service_name}} {{generation}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Thread Pool Threads",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "process_runtime_dotnet_thread_pool_threads_count",
+          "legendFormat": "{{service_name}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Active HTTP Requests",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "http_server_active_requests",
+          "legendFormat": "{{service_name}}"
+        }
+      ]
+    }
+  ]
+}

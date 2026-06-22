@@ -1,0 +1,36 @@
+{
+  "title": "TCGTrading - Distributed Traces",
+  "uid": "tcg-traces",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Trace Explorer",
+      "type": "traces",
+      "gridPos": { "h": 20, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "tempo", "uid": "tempo" },
+      "targets": [
+        {
+          "queryType": "traceqlSearch",
+          "filters": [
+            {
+              "id": "service-name",
+              "scope": "resource",
+              "tag": "service.name",
+              "operator": "=",
+              "valueType": "string"
+            },
+            {
+              "id": "min-duration",
+              "tag": "duration",
+              "operator": ">",
+              "valueType": "duration",
+              "value": "0ms"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
