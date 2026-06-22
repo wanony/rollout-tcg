@@ -46,6 +46,7 @@ public class IntegrationEventTests
     {
         var events = new IntegrationEvent[]
         {
+            new CardCatalogSyncedEvent(Guid.NewGuid(), DateTime.UtcNow, "Pokemon", new[] { "xy1-1" }),
             new CardPriceUpdatedEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), "x", "Pokemon", 1m, 1m, 1m),
             new ListingCreatedEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), Guid.NewGuid(), "Pikachu", Guid.NewGuid(), 10m, "NearMint"),
             new ListingPurchasedEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 10m),
