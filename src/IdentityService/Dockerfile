@@ -1,14 +1,17 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy project files for restore (layer-caching)
-COPY Directory.Build.props ./
-COPY Directory.Packages.props ./
+# Layer 1: Central build config — changes rarely, cached longest
+COPY Directory.Build.props Directory.Packages.props ./
+
+# Layer 2: Project files only — restore cached until deps change
+COPY src/SharedKernel/TCGTrading.SharedKernel.csproj src/SharedKernel/
 COPY src/IdentityService/TCGTrading.IdentityService.csproj src/IdentityService/
 
 RUN dotnet restore src/IdentityService/TCGTrading.IdentityService.csproj
 
-# Copy full source and publish
+# Layer 3: Full source — invalidates restore cache only on source change
+COPY src/SharedKernel/ src/SharedKernel/
 COPY src/IdentityService/ src/IdentityService/
 
 RUN dotnet publish src/IdentityService/TCGTrading.IdentityService.csproj \
@@ -16,7 +19,7 @@ RUN dotnet publish src/IdentityService/TCGTrading.IdentityService.csproj \
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-# curl needed for Docker healthcheck — not in base image by default
+# curl required for Docker healthcheck in docker-compose.yml
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app/publish .
