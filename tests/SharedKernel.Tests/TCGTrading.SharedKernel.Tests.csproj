@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <!-- Roll forward to latest major runtime so net8.0 targets run on .NET 10 runtime -->
     <RunSettingsFilePath>$(MSBuildProjectDirectory)/test.runsettings</RunSettingsFilePath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="FluentAssertions" />
     <ProjectReference Include="../../src/SharedKernel/TCGTrading.SharedKernel.csproj" />
