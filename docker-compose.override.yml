@@ -1,0 +1,8 @@
+# Dev-only overrides — not committed with secrets in real projects
+services:
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: dev
+  rabbitmq:
+    environment:
+      RABBITMQ_DEFAULT_PASS: dev
