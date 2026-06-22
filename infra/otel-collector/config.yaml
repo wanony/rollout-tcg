@@ -22,7 +22,7 @@ exporters:
   prometheusremotewrite:
     endpoint: http://prometheus:9090/api/v1/write
     tls:
-      insecure_skip_verify: true
+      insecure: true
   loki:
     endpoint: http://loki:3100/loki/api/v1/push
 

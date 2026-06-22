@@ -26,7 +26,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "process_runtime_dotnet_gc_heap_size_bytes",
+          "expr": "process_runtime_dotnet_gc_heap_size_bytes by (generation, service_name)",
           "legendFormat": "{{service_name}} {{generation}}"
         }
       ]
