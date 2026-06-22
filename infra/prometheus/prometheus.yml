@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+storage:
+  tsdb:
+    out_of_order_time_window: 10m
+
+scrape_configs:
+  - job_name: tcgtrading-services
+    static_configs:
+      - targets:
+          - host.docker.internal:5000
+          - host.docker.internal:5001
+          - host.docker.internal:5002
+          - host.docker.internal:5003
+          - host.docker.internal:5004
+          - host.docker.internal:5005
+          - host.docker.internal:5006
+        labels:
+          app: tcgtrading
+    metrics_path: /metrics
