@@ -484,3 +484,6 @@ $RECYCLE.BIN/
 # Docker
 .env.local
 docker-compose.override.local.yml
+
+# Duende IdentityServer developer signing key (regenerated on each restart)
+tempkey.jwk
