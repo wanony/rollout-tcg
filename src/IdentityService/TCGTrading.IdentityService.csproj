@@ -3,6 +3,7 @@
     <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-v9xq-2mvm-x8xc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="../SharedKernel/TCGTrading.SharedKernel.csproj" />
     <PackageReference Include="Duende.IdentityServer" />
     <PackageReference Include="Duende.IdentityServer.AspNetIdentity" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
@@ -11,5 +12,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
+    <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" />
   </ItemGroup>
 </Project>

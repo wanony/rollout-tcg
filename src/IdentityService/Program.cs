@@ -1,11 +1,21 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using TCGTrading.IdentityService;
 using TCGTrading.IdentityService.Data;
 using TCGTrading.IdentityService.Endpoints;
 using TCGTrading.IdentityService.Models;
+using TCGTrading.SharedKernel.Infrastructure.Telemetry;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddTelemetry("identity-service");
+builder.Services.AddOpenTelemetry()
+    .WithTracing(t => t.AddAspNetCoreInstrumentation())
+    .WithMetrics(m => m
+        .AddAspNetCoreInstrumentation()
+        .AddPrometheusExporter());
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("IdentityDb")));
@@ -42,6 +52,8 @@ builder.Services.AddIdentityServer(options =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.MapPrometheusScrapingEndpoint();
 
 // Migrate on startup — idempotent, safe in Docker restarts
 using (var scope = app.Services.CreateScope())
