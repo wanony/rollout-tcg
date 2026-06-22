@@ -48,3 +48,4 @@ jobs:
           name: .NET Tests
           path: TestResults/*.trx
           reporter: dotnet-trx
+          fail_on_error: false

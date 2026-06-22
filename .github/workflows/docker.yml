@@ -34,6 +34,7 @@ jobs:
               - 'src/SharedKernel/**'
               - 'Directory.Build.props'
               - 'Directory.Packages.props'
+              - '.github/workflows/docker.yml'
             api-gateway:
               - 'src/ApiGateway/**'
             card-catalog:
@@ -53,32 +54,27 @@ jobs:
     name: Build & push ${{ matrix.service.name }}
     runs-on: ubuntu-latest
     needs: [changes]
-    if: needs.changes.outputs.shared == 'true' || needs.changes.outputs[matrix.service.name] == 'true'
+    if: >-
+      needs.changes.outputs.shared == 'true' ||
+      fromJson(toJson(needs.changes.outputs))[matrix.service.name] == 'true'
     strategy:
       fail-fast: false
       matrix:
         service:
           - name: api-gateway
             project: ApiGateway
-            dll: TCGTrading.ApiGateway.dll
           - name: card-catalog
             project: CardCatalog
-            dll: TCGTrading.CardCatalog.Api.dll
           - name: identity-service
             project: IdentityService
-            dll: TCGTrading.IdentityService.dll
           - name: marketplace
             project: Marketplace
-            dll: TCGTrading.Marketplace.Api.dll
           - name: notification
             project: Notification
-            dll: TCGTrading.Notification.Api.dll
           - name: portfolio
             project: Portfolio
-            dll: TCGTrading.Portfolio.Api.dll
           - name: pricing
             project: Pricing
-            dll: TCGTrading.Pricing.Api.dll
 
     steps:
       - name: Checkout

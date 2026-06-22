@@ -11,7 +11,7 @@ COPY src/SharedKernel/ src/SharedKernel/
 COPY src/CardCatalog/ src/CardCatalog/
 
 RUN dotnet publish src/CardCatalog/TCGTrading.CardCatalog.Api.csproj \
-    -c Release -o /app/publish
+    -c Release --no-restore -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app

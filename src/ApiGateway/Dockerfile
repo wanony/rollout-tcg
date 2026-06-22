@@ -11,7 +11,7 @@ COPY src/SharedKernel/ src/SharedKernel/
 COPY src/ApiGateway/ src/ApiGateway/
 
 RUN dotnet publish src/ApiGateway/TCGTrading.ApiGateway.csproj \
-    -c Release -o /app/publish
+    -c Release --no-restore -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app

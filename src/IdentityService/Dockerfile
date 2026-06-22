@@ -15,7 +15,7 @@ COPY src/SharedKernel/ src/SharedKernel/
 COPY src/IdentityService/ src/IdentityService/
 
 RUN dotnet publish src/IdentityService/TCGTrading.IdentityService.csproj \
-    -c Release -o /app/publish
+    -c Release --no-restore -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
