@@ -4,13 +4,11 @@ WORKDIR /src
 # Copy project files for restore (layer-caching)
 COPY Directory.Build.props ./
 COPY Directory.Packages.props ./
-COPY src/SharedKernel/TCGTrading.SharedKernel.csproj src/SharedKernel/
 COPY src/IdentityService/TCGTrading.IdentityService.csproj src/IdentityService/
 
 RUN dotnet restore src/IdentityService/TCGTrading.IdentityService.csproj
 
 # Copy full source and publish
-COPY src/SharedKernel/ src/SharedKernel/
 COPY src/IdentityService/ src/IdentityService/
 
 RUN dotnet publish src/IdentityService/TCGTrading.IdentityService.csproj \

@@ -14,10 +14,13 @@ public class TokenFlowTests(IdentityServiceFixture fixture)
     [Fact]
     public async Task GetToken_ValidCredentials_ReturnsAccessToken()
     {
+        var suffix = Guid.NewGuid().ToString("N")[..8];
+        var userName = $"gary_{suffix}";
+
         // Register user first
         await _client.PostAsJsonAsync("/account/register", new RegisterRequest(
-            UserName: "gary_oak",
-            Email: "gary@pokecenter.com",
+            UserName: userName,
+            Email: $"gary_{suffix}@pokecenter.com",
             Password: "Gary@123456"));
 
         // Request token via ROPC — username is the UserName field, NOT email
@@ -26,7 +29,7 @@ public class TokenFlowTests(IdentityServiceFixture fixture)
                 new("grant_type", "password"),
                 new("client_id", "test-client"),
                 new("client_secret", "test-secret"),
-                new("username", "gary_oak"),
+                new("username", userName),
                 new("password", "Gary@123456"),
                 new("scope", "openid profile tcg.full"),
             ]));
@@ -44,9 +47,12 @@ public class TokenFlowTests(IdentityServiceFixture fixture)
     [Fact]
     public async Task GetToken_WrongPassword_Returns400()
     {
+        var suffix = Guid.NewGuid().ToString("N")[..8];
+        var userName = $"prof_{suffix}";
+
         await _client.PostAsJsonAsync("/account/register", new RegisterRequest(
-            UserName: "professor_oak",
-            Email: "oak@pokecenter.com",
+            UserName: userName,
+            Email: $"oak_{suffix}@pokecenter.com",
             Password: "Oak@123456"));
 
         var tokenResponse = await _client.PostAsync("/connect/token",
@@ -54,7 +60,7 @@ public class TokenFlowTests(IdentityServiceFixture fixture)
                 new("grant_type", "password"),
                 new("client_id", "test-client"),
                 new("client_secret", "test-secret"),
-                new("username", "professor_oak"),
+                new("username", userName),
                 new("password", "WrongPassword@1"),
                 new("scope", "openid tcg.full"),
             ]));
@@ -78,9 +84,12 @@ public class TokenFlowTests(IdentityServiceFixture fixture)
     [Fact]
     public async Task GetToken_ValidCredentials_TokenContainsSubClaim()
     {
+        var suffix = Guid.NewGuid().ToString("N")[..8];
+        var userName = $"joy_{suffix}";
+
         await _client.PostAsJsonAsync("/account/register", new RegisterRequest(
-            UserName: "nurse_joy",
-            Email: "joy@pokecenter.com",
+            UserName: userName,
+            Email: $"joy_{suffix}@pokecenter.com",
             Password: "Joy@123456"));
 
         var tokenResponse = await _client.PostAsync("/connect/token",
@@ -88,11 +97,12 @@ public class TokenFlowTests(IdentityServiceFixture fixture)
                 new("grant_type", "password"),
                 new("client_id", "test-client"),
                 new("client_secret", "test-secret"),
-                new("username", "nurse_joy"),
+                new("username", userName),
                 new("password", "Joy@123456"),
                 new("scope", "openid profile tcg.full"),
             ]));
 
+        tokenResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var json = await tokenResponse.Content.ReadFromJsonAsync<JsonElement>();
         var accessToken = json.GetProperty("access_token").GetString()!;
 

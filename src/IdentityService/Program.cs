@@ -23,6 +23,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 // Developer signing credential auto-generates a key on each restart.
 // Production: replace with AddSigningCredential() using cert from Key Vault.
+var clients = builder.Environment.IsProduction()
+    ? Config.Clients.Where(c => c.ClientId != "test-client")
+    : Config.Clients;
+
 builder.Services.AddIdentityServer(options =>
 {
     options.Events.RaiseErrorEvents = true;
@@ -32,7 +36,7 @@ builder.Services.AddIdentityServer(options =>
 .AddDeveloperSigningCredential()
 .AddInMemoryIdentityResources(Config.IdentityResources)
 .AddInMemoryApiScopes(Config.ApiScopes)
-.AddInMemoryClients(Config.Clients)
+.AddInMemoryClients(clients)
 .AddAspNetIdentity<ApplicationUser>();
 
 builder.Services.AddAuthorization();

@@ -29,11 +29,13 @@ public class IdentityServiceFixture : WebApplicationFactory<Program>, IAsyncLife
     {
         builder.ConfigureServices(services =>
         {
-            // Remove the production DbContext registration
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-            if (descriptor is not null)
-                services.Remove(descriptor);
+            // Remove production DbContext registrations
+            var descriptors = services
+                .Where(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>)
+                         || d.ServiceType == typeof(AppDbContext))
+                .ToList();
+            foreach (var d in descriptors)
+                services.Remove(d);
 
             // Register with test container connection string
             services.AddDbContext<AppDbContext>(options =>

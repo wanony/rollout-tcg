@@ -25,9 +25,11 @@ public static class AccountEndpoints
 
             if (!result.Succeeded)
                 return Results.ValidationProblem(
-                    result.Errors.ToDictionary(
-                        e => e.Code,
-                        e => new[] { e.Description }));
+                    result.Errors
+                        .GroupBy(e => e.Code)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(e => e.Description).ToArray()));
 
             return Results.Created(
                 $"/account/{user.Id}",

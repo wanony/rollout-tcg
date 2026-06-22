@@ -13,33 +13,40 @@ public class AccountEndpointsTests(IdentityServiceFixture fixture)
     [Fact]
     public async Task Register_ValidUser_Returns201WithUserDetails()
     {
+        var suffix = Guid.NewGuid().ToString("N")[..8];
+        var userName = $"pikachu_{suffix}";
+        var email = $"ash_{suffix}@pokecenter.com";
+
         var request = new RegisterRequest(
-            UserName: "pikachu_trainer",
-            Email: "ash@pokecenter.com",
+            UserName: userName,
+            Email: email,
             Password: "Pika@123456");
 
         var response = await _client.PostAsJsonAsync("/account/register", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         var body = await response.Content.ReadFromJsonAsync<RegisteredUserResponse>();
-        body!.UserName.Should().Be("pikachu_trainer");
-        body.Email.Should().Be("ash@pokecenter.com");
+        body!.UserName.Should().Be(userName);
+        body.Email.Should().Be(email);
         body.Id.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
     public async Task Register_DuplicateEmail_Returns400()
     {
+        var suffix = Guid.NewGuid().ToString("N")[..8];
+        var sharedEmail = $"misty_{suffix}@pokecenter.com";
+
         var request = new RegisterRequest(
-            UserName: "misty_trainer",
-            Email: "misty@pokecenter.com",
+            UserName: $"misty_{Guid.NewGuid().ToString("N")[..8]}",
+            Email: sharedEmail,
             Password: "Water@123456");
 
         await _client.PostAsJsonAsync("/account/register", request);
 
         var duplicate = new RegisterRequest(
-            UserName: "misty_trainer2",
-            Email: "misty@pokecenter.com",
+            UserName: $"misty_{Guid.NewGuid().ToString("N")[..8]}",
+            Email: sharedEmail,
             Password: "Water@123456");
 
         var response = await _client.PostAsJsonAsync("/account/register", duplicate);
@@ -50,9 +57,11 @@ public class AccountEndpointsTests(IdentityServiceFixture fixture)
     [Fact]
     public async Task Register_WeakPassword_Returns400WithDetails()
     {
+        var suffix = Guid.NewGuid().ToString("N")[..8];
+
         var request = new RegisterRequest(
-            UserName: "brock_trainer",
-            Email: "brock@pokecenter.com",
+            UserName: $"brock_{suffix}",
+            Email: $"brock_{suffix}@pokecenter.com",
             Password: "weak");
 
         var response = await _client.PostAsJsonAsync("/account/register", request);
