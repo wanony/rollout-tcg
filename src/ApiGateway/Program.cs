@@ -14,14 +14,26 @@ builder.Services.AddOpenTelemetry()
 
 builder.AddRateLimiting();
 
+builder.Services.AddCors(opts =>
+    opts.AddDefaultPolicy(policy =>
+        policy
+            .WithOrigins(builder.Configuration["Cors:AllowedOrigin"] ?? "http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()));
+
+builder.Services.AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
 var app = builder.Build();
 
+app.UseCors();
 app.UseRateLimiter();
 
 app.MapPrometheusScrapingEndpoint();
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/health", () => Results.Ok());
+app.MapReverseProxy();
 
 app.Run();
 
-// Exposes Program class to WebApplicationFactory<Program> in test projects
 public partial class Program { }

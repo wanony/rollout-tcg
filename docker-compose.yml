@@ -164,6 +164,73 @@ services:
       retries: 5
       start_period: 20s
 
+  card-catalog:
+    build:
+      context: .
+      dockerfile: src/CardCatalog/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5005
+      ConnectionStrings__CardDb: "Host=postgres;Port=5432;Database=db_cards;Username=tcg;Password=dev"
+      MeiliSearch__Host: "http://meilisearch:7700"
+      MeiliSearch__ApiKey: masterKey
+    ports:
+      - "5005:5005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+
+  pricing:
+    build:
+      context: .
+      dockerfile: src/Pricing/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5006
+      ConnectionStrings__PricingDb: "Host=timescaledb;Port=5432;Database=db_pricing;Username=tcg;Password=dev"
+    ports:
+      - "5006:5006"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: src/ApiGateway/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+      Redis__ConnectionString: "redis:6379"
+      Cors__AllowedOrigin: "http://localhost:3000"
+    ports:
+      - "5000:5000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      portfolio:
+        condition: service_started
+      marketplace:
+        condition: service_started
+      notification:
+        condition: service_started
+      card-catalog:
+        condition: service_started
+      pricing:
+        condition: service_started
+
+  frontend:
+    build:
+      context: src/Frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api-gateway
+      - identity-service
+
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.104.0
     profiles: [observability]
