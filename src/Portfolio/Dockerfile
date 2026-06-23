@@ -11,7 +11,7 @@ COPY src/SharedKernel/ src/SharedKernel/
 COPY src/Portfolio/ src/Portfolio/
 
 RUN dotnet publish src/Portfolio/TCGTrading.Portfolio.Api.csproj \
-    -c Release --no-restore -o /app/publish
+    -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app

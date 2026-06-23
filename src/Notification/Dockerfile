@@ -11,7 +11,7 @@ COPY src/SharedKernel/ src/SharedKernel/
 COPY src/Notification/ src/Notification/
 
 RUN dotnet publish src/Notification/TCGTrading.Notification.Api.csproj \
-    -c Release --no-restore -o /app/publish
+    -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app

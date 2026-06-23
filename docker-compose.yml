@@ -52,10 +52,11 @@ services:
     volumes:
       - meilisearch_data:/meili_data
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:7700/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://0.0.0.0:7700/health || exit 1"]
       interval: 5s
       timeout: 3s
-      retries: 5
+      retries: 10
+      start_period: 15s
 
   timescaledb:
     image: timescale/timescaledb:latest-pg16
@@ -206,7 +207,7 @@ services:
       Redis__ConnectionString: "redis:6379"
       Cors__AllowedOrigin: "http://localhost"
     ports:
-      - "5000:5000"
+      - "5010:5000"
     depends_on:
       redis:
         condition: service_healthy

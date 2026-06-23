@@ -11,7 +11,7 @@ COPY src/SharedKernel/ src/SharedKernel/
 COPY src/Marketplace/ src/Marketplace/
 
 RUN dotnet publish src/Marketplace/TCGTrading.Marketplace.Api.csproj \
-    -c Release --no-restore -o /app/publish
+    -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
