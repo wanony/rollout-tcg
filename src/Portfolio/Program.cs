@@ -34,11 +34,18 @@ app.MapPost("/portfolio/cards", async (
     ICollectionRepository repo,
     CancellationToken ct) =>
 {
-    var item = CollectionItem.Create(
-        request.UserId, request.CardId, request.CardName,
-        request.Quantity, request.Condition, request.AcquisitionPriceUsd);
-    await repo.AddAsync(item, ct);
-    return Results.Created($"/portfolio/cards/{item.Id}", item.ToResponse());
+    try
+    {
+        var item = CollectionItem.Create(
+            request.UserId, request.CardId, request.CardName,
+            request.Quantity, request.Condition, request.AcquisitionPriceUsd);
+        await repo.AddAsync(item, ct);
+        return Results.Created($"/portfolio/cards/{item.Id}", item.ToResponse());
+    }
+    catch (ArgumentOutOfRangeException ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
 });
 
 app.MapGet("/portfolio/cards", async (

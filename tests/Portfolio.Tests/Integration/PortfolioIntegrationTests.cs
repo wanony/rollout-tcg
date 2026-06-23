@@ -18,16 +18,18 @@ public class PortfolioIntegrationTests(PortfolioFixture fixture)
     public async Task AddCard_Returns201_AndCanBeRetrieved()
     {
         var client = fixture.CreateClient();
+        var userId = Guid.NewGuid();
 
-        var post = await client.PostAsJsonAsync("/portfolio/cards", SampleRequest());
+        var request = new AddCardRequest(userId, CardId, "Dragon Fire", 1, "NearMint", 10.50m);
+        var post = await client.PostAsJsonAsync("/portfolio/cards", request);
 
         post.StatusCode.Should().Be(HttpStatusCode.Created);
         var item = await post.Content.ReadFromJsonAsync<CollectionItemResponse>();
         item.Should().NotBeNull();
         item!.CardName.Should().Be("Dragon Fire");
-        item.UserId.Should().Be(UserId);
+        item.UserId.Should().Be(userId);
 
-        var get = await client.GetAsync($"/portfolio/cards?userId={UserId}");
+        var get = await client.GetAsync($"/portfolio/cards?userId={userId}");
         get.StatusCode.Should().Be(HttpStatusCode.OK);
         var items = await get.Content.ReadFromJsonAsync<CollectionItemResponse[]>();
         items.Should().HaveCount(1);
