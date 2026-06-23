@@ -37,8 +37,8 @@ public class ListingPurchasedConsumerTests
 
         await consumer.Consume(ctx);
 
-        await repo.Received(2).AddAsync(
-            Arg.Any<UserNotification>(), Arg.Any<CancellationToken>());
+        await repo.Received(1).AddRangeAsync(
+            Arg.Any<IEnumerable<UserNotification>>(), Arg.Any<CancellationToken>());
 
         await proxy.Received(2).SendCoreAsync(
             "notification", Arg.Any<object?[]>(), Arg.Any<CancellationToken>());

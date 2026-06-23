@@ -31,8 +31,7 @@ public class ListingPurchasedConsumer(
             NotificationType.ListingSold,
             referenceId: e.ListingId);
 
-        await repo.AddAsync(buyerNotif, context.CancellationToken);
-        await repo.AddAsync(sellerNotif, context.CancellationToken);
+        await repo.AddRangeAsync([buyerNotif, sellerNotif], context.CancellationToken);
 
         await PushAsync(e.BuyerId, buyerNotif);
         await PushAsync(e.SellerId, sellerNotif);

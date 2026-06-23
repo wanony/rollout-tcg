@@ -12,6 +12,12 @@ public class NotificationRepository(NotificationDbContext db) : INotificationRep
         await db.SaveChangesAsync(ct);
     }
 
+    public async Task AddRangeAsync(IEnumerable<UserNotification> notifications, CancellationToken ct = default)
+    {
+        await db.UserNotifications.AddRangeAsync(notifications, ct);
+        await db.SaveChangesAsync(ct);
+    }
+
     public async Task<IReadOnlyList<UserNotification>> GetByUserIdAsync(Guid userId, CancellationToken ct = default)
         => await db.UserNotifications
             .Where(n => n.UserId == userId)
