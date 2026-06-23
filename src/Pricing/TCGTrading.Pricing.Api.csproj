@@ -9,4 +9,7 @@
     <PackageReference Include="Dapper" />
     <PackageReference Include="Npgsql" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Infrastructure/Persistence/migration.sql" />
+  </ItemGroup>
 </Project>
