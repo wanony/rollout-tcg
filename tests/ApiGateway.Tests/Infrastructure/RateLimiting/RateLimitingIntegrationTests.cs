@@ -73,7 +73,7 @@ public class RateLimitingIntegrationTests(ApiGatewayFixture fixture)
     private static string CreateJwt(string sub)
     {
         var header = Base64UrlEncode("""{"alg":"none","typ":"JWT"}""");
-        var payload = Base64UrlEncode($"""{"sub":"{sub}"}""");
+        var payload = Base64UrlEncode($$"""{"sub":"{{sub}}"}""");
         return $"{header}.{payload}.";
     }
 
