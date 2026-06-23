@@ -138,6 +138,32 @@ services:
       retries: 5
       start_period: 20s
 
+  notification:
+    build:
+      context: .
+      dockerfile: src/Notification/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5004
+      ConnectionStrings__NotificationDb: "Host=postgres;Port=5432;Database=db_notification;Username=tcg;Password=dev"
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: tcg
+      RabbitMq__Password: dev
+      Cors__AllowedOrigin: "http://localhost:3000"
+    ports:
+      - "5004:5004"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5004/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.104.0
     profiles: [observability]

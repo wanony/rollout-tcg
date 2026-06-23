@@ -3,3 +3,4 @@ CREATE DATABASE db_cards;
 CREATE DATABASE db_portfolio;
 CREATE DATABASE db_marketplace;
 CREATE DATABASE db_pricing;
+CREATE DATABASE db_notification;
