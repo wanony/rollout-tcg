@@ -80,7 +80,7 @@ public sealed class MeiliSearchCardSearchService(
 
         return new CardSearchResponse(
             items,
-            searchResult.EstimatedTotalHits ?? items.Count,
+            (long)searchResult.EstimatedTotalHits,
             page,
             pageSize);
     }
