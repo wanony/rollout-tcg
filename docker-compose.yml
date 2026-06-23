@@ -93,6 +93,26 @@ services:
       retries: 10
       start_period: 30s
 
+  portfolio:
+    build:
+      context: .
+      dockerfile: src/Portfolio/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5002
+      ConnectionStrings__PortfolioDb: "Host=postgres;Port=5432;Database=db_portfolio;Username=tcg;Password=dev"
+    ports:
+      - "5002:5002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5002/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.104.0
     profiles: [observability]
