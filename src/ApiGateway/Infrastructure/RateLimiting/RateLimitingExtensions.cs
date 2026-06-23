@@ -70,6 +70,8 @@ public static class RateLimitingExtensions
                             });
                     }
 
+                    // TODO: trust X-Forwarded-For only from known proxies via UseForwardedHeaders
+                    // — as-is, any client can spoof this header to bypass IP rate limiting.
                     var ip = httpContext.Request.Headers["X-Forwarded-For"]
                                  .FirstOrDefault()
                              ?? httpContext.Connection.RemoteIpAddress?.ToString()
@@ -89,6 +91,8 @@ public static class RateLimitingExtensions
         return builder;
     }
 
+    // TODO: when real JWT auth lands, replace manual decode with httpContext.User.FindFirst("sub")
+    // — until then, sub is unverified and any caller can spoof it to get the higher auth limit.
     private static string? ExtractSub(HttpContext httpContext)
     {
         var authHeader = httpContext.Request.Headers.Authorization.ToString();
