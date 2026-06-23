@@ -30,7 +30,7 @@ public sealed class MeiliSearchCardSearchService(
         if (cards.Count == 0) return;
         try
         {
-            var index = await EnsureIndexAsync(ct);
+            var index = await ConfigureIndexAsync(ct);
             var taskInfo = await index.AddDocumentsAsync(
                 cards.Select(ToDocument), cancellationToken: ct);
             // Wait for indexing to complete — ensures search works immediately after startup
@@ -85,7 +85,15 @@ public sealed class MeiliSearchCardSearchService(
             pageSize);
     }
 
+    // Lightweight: only ensures the index exists. Used by single-card writes.
     private async Task<Meilisearch.Index> EnsureIndexAsync(CancellationToken ct)
+    {
+        await client.CreateIndexAsync(IndexName, "id", ct);
+        return client.Index(IndexName);
+    }
+
+    // Full setup: creates the index and configures all attributes. Used at startup via IndexAllAsync.
+    private async Task<Meilisearch.Index> ConfigureIndexAsync(CancellationToken ct)
     {
         await client.CreateIndexAsync(IndexName, "id", ct);
         var index = client.Index(IndexName);
@@ -93,6 +101,7 @@ public sealed class MeiliSearchCardSearchService(
             ["name", "type", "set", "text"], ct);
         await index.UpdateFilterableAttributesAsync(
             ["set", "rarity", "type"], ct);
+        await index.UpdateSortableAttributesAsync(["name"], ct);
         return index;
     }
 
