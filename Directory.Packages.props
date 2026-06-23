@@ -41,5 +41,9 @@
     <PackageVersion Include="RedisRateLimiting.AspNetCore" Version="1.2.1" />
     <PackageVersion Include="StackExchange.Redis" Version="2.8.0" />
     <PackageVersion Include="Testcontainers.Redis" Version="3.10.0" />
+    <!-- Search -->
+    <PackageVersion Include="MeiliSearch" Version="0.19.0" />
+    <!-- Testcontainers base (generic container API for MeiliSearch in tests) -->
+    <PackageVersion Include="Testcontainers" Version="3.10.0" />
   </ItemGroup>
 </Project>

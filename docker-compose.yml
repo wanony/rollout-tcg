@@ -42,6 +42,21 @@ services:
       timeout: 3s
       retries: 5
 
+  meilisearch:
+    image: getmeili/meilisearch:v1.9
+    environment:
+      MEILI_MASTER_KEY: masterKey
+      MEILI_NO_ANALYTICS: "true"
+    ports:
+      - "7700:7700"
+    volumes:
+      - meilisearch_data:/meili_data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7700/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   identity-service:
     build:
       context: .
@@ -137,3 +152,4 @@ volumes:
   prometheus_data:
   loki_data:
   grafana_data:
+  meilisearch_data:
