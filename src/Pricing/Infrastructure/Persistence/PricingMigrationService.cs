@@ -25,6 +25,7 @@ public sealed class PricingMigrationService(IConfiguration configuration)
         var sql = await reader.ReadToEndAsync(ct);
 
         await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(ct);
         await connection.ExecuteAsync(sql);
     }
 }
