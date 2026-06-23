@@ -1,5 +1,6 @@
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using TCGTrading.ApiGateway.Infrastructure.RateLimiting;
 using TCGTrading.SharedKernel.Infrastructure.Telemetry;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,11 @@ builder.Services.AddOpenTelemetry()
         .AddAspNetCoreInstrumentation()
         .AddPrometheusExporter());
 
+builder.AddRateLimiting();
+
 var app = builder.Build();
+
+app.UseRateLimiter();
 
 app.MapPrometheusScrapingEndpoint();
 app.MapGet("/", () => "Hello World!");
