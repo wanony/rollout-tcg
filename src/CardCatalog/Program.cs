@@ -1,5 +1,7 @@
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using TCGTrading.CardCatalog.Infrastructure.Persistence;
+using TCGTrading.CardCatalog.Infrastructure.Search;
 using TCGTrading.SharedKernel.Infrastructure.Telemetry;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,9 +13,14 @@ builder.Services.AddOpenTelemetry()
         .AddAspNetCoreInstrumentation()
         .AddPrometheusExporter());
 
+builder.AddPersistence();
+builder.AddSearch();
+
 var app = builder.Build();
 
 app.MapPrometheusScrapingEndpoint();
 app.MapGet("/", () => "Hello World!");
 
 app.Run();
+
+public partial class Program { }
