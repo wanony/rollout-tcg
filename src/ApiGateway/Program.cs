@@ -17,3 +17,6 @@ app.MapPrometheusScrapingEndpoint();
 app.MapGet("/", () => "Hello World!");
 
 app.Run();
+
+// Exposes Program class to WebApplicationFactory<Program> in test projects
+public partial class Program { }
