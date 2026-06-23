@@ -57,6 +57,22 @@ services:
       timeout: 3s
       retries: 5
 
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_USER: tcg
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: db_pricing
+    ports:
+      - "5433:5432"
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tcg"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   identity-service:
     build:
       context: .
@@ -153,3 +169,4 @@ volumes:
   loki_data:
   grafana_data:
   meilisearch_data:
+  timescaledb_data:
