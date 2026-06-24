@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Layer 1: Central build config — changes rarely, cached longest
@@ -17,7 +17,7 @@ COPY src/IdentityService/ src/IdentityService/
 RUN dotnet publish src/IdentityService/TCGTrading.IdentityService.csproj \
     -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 # curl required for Docker healthcheck in docker-compose.yml
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
