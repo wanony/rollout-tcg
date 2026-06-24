@@ -1,4 +1,5 @@
 import { useRef, useCallback } from 'react'
+import { primaryGlow } from '../lib/typeColors'
 
 const HOLO_TIER: Record<string, 'none' | 'holo' | 'ultra'> = {
   Common: 'none',
@@ -27,30 +28,31 @@ function holoTier(rarity: string): 'none' | 'holo' | 'ultra' {
 interface HoloCardProps {
   children: React.ReactNode
   rarity?: string
+  types?: string[]
   className?: string
 }
 
-export default function HoloCard({ children, rarity = 'Common', className = '' }: HoloCardProps) {
+export default function HoloCard({ children, rarity = 'Common', types, className = '' }: HoloCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const tier = holoTier(rarity)
+  const glowColor = primaryGlow(types)
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const card = cardRef.current
-    if (!card || tier === 'none') return
+    if (!card) return
     const rect = card.getBoundingClientRect()
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
     const cx = rect.width / 2
     const cy = rect.height / 2
-    const rotateY = ((x - cx) / cx) * 15
-    const rotateX = -((y - cy) / cy) * 15
     card.style.setProperty('--pointer-x', `${(x / rect.width) * 100}%`)
     card.style.setProperty('--pointer-y', `${(y / rect.height) * 100}%`)
-    card.style.setProperty('--rotate-x', `${rotateX}deg`)
-    card.style.setProperty('--rotate-y', `${rotateY}deg`)
-    card.style.setProperty('--shine-opacity', tier === 'ultra' ? '1' : '0.6')
-    card.style.setProperty('--foil-opacity', tier === 'ultra' ? '0.7' : '0.35')
-  }, [tier])
+    card.style.setProperty('--rotate-x', `${-((y - cy) / cy) * 15}deg`)
+    card.style.setProperty('--rotate-y', `${((x - cx) / cx) * 15}deg`)
+    card.style.setProperty('--shine-opacity', tier === 'ultra' ? '1' : tier === 'holo' ? '0.6' : '0')
+    card.style.setProperty('--foil-opacity', tier === 'ultra' ? '0.7' : tier === 'holo' ? '0.35' : '0')
+    card.style.setProperty('--glow-color', glowColor)
+  }, [tier, glowColor])
 
   const handleMouseLeave = useCallback(() => {
     const card = cardRef.current
@@ -59,7 +61,8 @@ export default function HoloCard({ children, rarity = 'Common', className = '' }
     card.style.setProperty('--rotate-y', '0deg')
     card.style.setProperty('--shine-opacity', '0')
     card.style.setProperty('--foil-opacity', '0')
-  }, [])
+    card.style.setProperty('--glow-color', glowColor)
+  }, [glowColor])
 
   return (
     <div

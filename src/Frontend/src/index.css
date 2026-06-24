@@ -23,11 +23,19 @@
   border-radius: 4.5% / 3.5%;
 }
 
-/* Lift on hover */
+/* Lift + type-tinted glow on hover */
 .holo-card:hover {
   box-shadow:
     0 30px 60px -12px rgba(0, 0, 0, 0.7),
-    0 0 0 1px rgba(255, 255, 255, 0.08);
+    0 0 40px -8px rgb(var(--glow-color, 139 92 246) / 0.35),
+    0 0 0 1px rgb(var(--glow-color, 139 92 246) / 0.15);
+}
+
+.holo-card[data-tier='holo']:hover {
+  box-shadow:
+    0 30px 60px -12px rgba(0, 0, 0, 0.7),
+    0 0 50px -6px rgb(var(--glow-color, 139 92 246) / 0.5),
+    0 0 0 1px rgb(var(--glow-color, 139 92 246) / 0.25);
 }
 
 /* Radial specular shine — follows cursor, sits on top of image */
@@ -80,9 +88,9 @@
   z-index: 3;
 }
 
-/* Ultra rarity: stronger tinted glow */
 .holo-card[data-tier='ultra']:hover {
   box-shadow:
-    0 30px 80px -10px rgba(139, 92, 246, 0.5),
-    0 0 0 1px rgba(167, 139, 250, 0.3);
+    0 30px 80px -10px rgba(0, 0, 0, 0.7),
+    0 0 70px -4px rgb(var(--glow-color, 139 92 246) / 0.65),
+    0 0 0 1px rgb(var(--glow-color, 139 92 246) / 0.4);
 }
