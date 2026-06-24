@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
 import { useAuth } from '../auth/useAuth'
 import { getListings, purchaseListing } from '../api/marketplace'
 
@@ -20,38 +21,54 @@ export default function MarketplacePage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Marketplace</h1>
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-xl font-bold text-slate-100 sm:text-2xl">Marketplace</h1>
         {user && (
-          <Link to="/marketplace/new"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            + List a Card
+          <Link
+            to="/marketplace/new"
+            className="rounded-lg bg-violet-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-violet-500 active:scale-95"
+          >
+            + List Card
           </Link>
         )}
       </div>
 
-      {isLoading && <p>Loading...</p>}
+      {isLoading && (
+        <div className="space-y-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-16 animate-pulse rounded-xl bg-slate-800/60" />
+          ))}
+        </div>
+      )}
 
-      <div className="space-y-3">
-        {listings?.map(listing => (
-          <div key={listing.id} className="bg-white border rounded px-4 py-3 flex items-center gap-4">
-            <div className="flex-1">
-              <div className="font-medium">{listing.cardName}</div>
-              <div className="text-sm text-gray-500">{listing.condition} · Seller: {listing.sellerId.slice(0, 8)}…</div>
+      <div className="space-y-2">
+        {listings?.map((listing, i) => (
+          <motion.div
+            key={listing.id}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.04 }}
+            className="flex items-center gap-3 rounded-xl border border-slate-700/50 bg-slate-900/80 px-4 py-3 backdrop-blur-sm"
+          >
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-slate-100 truncate">{listing.cardName}</div>
+              <div className="text-xs text-slate-500">{listing.condition}</div>
             </div>
-            <div className="font-bold text-green-700">${listing.askingPriceUsd.toFixed(2)}</div>
+            <div className="font-bold text-green-400 whitespace-nowrap">${listing.askingPriceUsd.toFixed(2)}</div>
             {user && user.profile.sub !== listing.sellerId && (
               <button
                 onClick={() => purchase.mutate({ id: listing.id, buyerId: user.profile.sub })}
                 disabled={purchase.isPending}
-                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-50"
+                className="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-violet-500 disabled:opacity-50 active:scale-95 whitespace-nowrap"
               >
                 Buy
               </button>
             )}
-          </div>
+          </motion.div>
         ))}
-        {listings?.length === 0 && <p className="text-gray-500">No active listings.</p>}
+        {!isLoading && listings?.length === 0 && (
+          <div className="mt-16 text-center text-slate-500">No active listings.</div>
+        )}
       </div>
     </div>
   )
