@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, ReactNode } from 'react'
 import { useAuth } from './auth/useAuth'
 import { setAuthToken } from './api/client'
 import Navbar from './components/Navbar'
@@ -11,7 +11,7 @@ import MarketplacePage from './pages/MarketplacePage'
 import NewListingPage from './pages/NewListingPage'
 import NotificationsPage from './pages/NotificationsPage'
 
-function RequireAuth({ children }: { children: React.ReactNode }) {
+function RequireAuth({ children }: { children: ReactNode }) {
   const { user, isLoading, login } = useAuth()
   useEffect(() => { if (!isLoading && !user) login() }, [user, isLoading, login])
   if (isLoading) return <div className="p-8">Loading...</div>

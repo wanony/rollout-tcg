@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../auth/useAuth'
@@ -16,7 +16,7 @@ export default function NewListingPage() {
     onSuccess: () => navigate('/marketplace'),
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     create.mutate({
       sellerId: user!.profile.sub,

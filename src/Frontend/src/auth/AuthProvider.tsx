@@ -22,10 +22,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    manager.getUser().then(u => {
-      setUser(u)
-      setIsLoading(false)
-    })
+    manager.getUser()
+      .then(u => {
+        setUser(u)
+        setIsLoading(false)
+      })
+      .catch(() => setIsLoading(false))
 
     const onUserLoaded = (u: User) => setUser(u)
     const onUserUnloaded = () => setUser(null)
