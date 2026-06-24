@@ -46,7 +46,7 @@
     <!-- Testcontainers base (generic container API for MeiliSearch in tests) -->
     <PackageVersion Include="Testcontainers" Version="3.10.0" />
     <!-- Pricing -->
-    <PackageVersion Include="Dapper" Version="2.1.35" />
+    <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="Npgsql" Version="10.0.3" />
     <!-- API Gateway -->
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
