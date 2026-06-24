@@ -37,9 +37,9 @@ export default function App() {
       </div>
 
       {/* Content layer */}
-      <div className="relative z-10 flex min-h-screen flex-col">
+      <div className="relative z-10 min-h-screen">
         <Navbar />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-3 py-4 sm:px-6 sm:py-6">
+        <main className="mx-auto w-full max-w-6xl px-3 pt-20 pb-4 sm:px-6 sm:pb-6">
           <Routes>
             <Route path="/" element={<Navigate to="/cards" replace />} />
             <Route path="/callback" element={<CallbackPage />} />
