@@ -10,7 +10,7 @@ import PortfolioPage from './pages/PortfolioPage'
 import MarketplacePage from './pages/MarketplacePage'
 import NewListingPage from './pages/NewListingPage'
 import NotificationsPage from './pages/NotificationsPage'
-import Dither from './components/Dither'
+import DitherBackground from './components/DitherBackground'
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user, isLoading, login } = useAuth()
@@ -33,15 +33,7 @@ export default function App() {
     <div className="relative min-h-screen bg-slate-950">
       {/* Dither background — fixed, behind everything */}
       <div className="fixed inset-0 z-0">
-        <Dither
-          waveColor={[0.3, 0.1, 0.5]}
-          waveSpeed={0.04}
-          waveFrequency={3}
-          waveAmplitude={0.3}
-          colorNum={4}
-          pixelSize={2}
-          enableMouseInteraction={true}
-        />
+        <DitherBackground />
       </div>
 
       {/* Content layer */}

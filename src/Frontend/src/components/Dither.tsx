@@ -150,7 +150,8 @@ class RetroEffectImpl extends Effect {
 
 const RetroEffect = forwardRef<RetroEffectImpl, { colorNum: number; pixelSize: number }>(
   ({ colorNum, pixelSize }, ref) => {
-    const WrappedRetroEffect = wrapEffect(RetroEffectImpl)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const WrappedRetroEffect = wrapEffect(RetroEffectImpl) as any
     return <WrappedRetroEffect ref={ref} colorNum={colorNum} pixelSize={pixelSize} />
   }
 )
