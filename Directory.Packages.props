@@ -3,8 +3,8 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="MassTransit" Version="8.3.0" />
-    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.3.0" />
+    <PackageVersion Include="MassTransit" Version="9.1.2" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="9.1.2" />
     <PackageVersion Include="MassTransit.AzureServiceBus" Version="8.3.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9" />
