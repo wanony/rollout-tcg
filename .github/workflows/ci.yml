@@ -42,7 +42,7 @@ jobs:
         run: dotnet test TCGTrading.sln --no-build -c Release --logger "trx;LogFileName=results.trx" --results-directory TestResults
 
       - name: Test report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         if: always()
         with:
           name: .NET Tests
