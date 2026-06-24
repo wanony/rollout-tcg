@@ -26,9 +26,9 @@ public static class Config
             AllowedGrantTypes = GrantTypes.Code,
             RequirePkce = true,
             RequireClientSecret = false,
-            RedirectUris = { "http://localhost:3000/callback", "http://localhost/callback" },
-            PostLogoutRedirectUris = { "http://localhost:3000", "http://localhost" },
-            AllowedCorsOrigins = { "http://localhost:3000", "http://localhost" },
+            RedirectUris = { "http://localhost:3000/callback", "http://localhost/callback", "http://100.77.135.111/callback" },
+            PostLogoutRedirectUris = { "http://localhost:3000", "http://localhost", "http://100.77.135.111" },
+            AllowedCorsOrigins = { "http://localhost:3000", "http://localhost", "http://100.77.135.111" },
             AllowedScopes = { "openid", "profile", "email", "tcg.full" },
             AllowOfflineAccess = true
         },

@@ -14,10 +14,13 @@ builder.Services.AddOpenTelemetry()
 
 builder.AddRateLimiting();
 
+var allowedOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? "http://localhost")
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
 builder.Services.AddCors(opts =>
     opts.AddDefaultPolicy(policy =>
         policy
-            .WithOrigins(builder.Configuration["Cors:AllowedOrigin"] ?? "http://localhost:3000")
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()));

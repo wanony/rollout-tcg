@@ -205,7 +205,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:5000
       Redis__ConnectionString: "redis:6379"
-      Cors__AllowedOrigin: "http://localhost"
+      Cors__AllowedOrigins: "http://localhost,http://100.77.135.111"
     ports:
       - "5010:5000"
     depends_on:
