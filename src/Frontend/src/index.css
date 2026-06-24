@@ -8,80 +8,81 @@
   }
 }
 
-/* Holographic card effect */
+/* ── Holographic card ────────────────────────────────────────────── */
 .holo-card {
   --pointer-x: 50%;
   --pointer-y: 50%;
-  --card-opacity: 0;
   --rotate-x: 0deg;
   --rotate-y: 0deg;
+  --shine-opacity: 0;
+  --foil-opacity: 0;
   position: relative;
-  transform-style: preserve-3d;
-  transform: perspective(600px) rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transform: perspective(700px) rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
+  transition: transform 0.12s ease, box-shadow 0.2s ease;
   will-change: transform;
+  border-radius: 4.5% / 3.5%;
 }
 
+/* Lift on hover */
 .holo-card:hover {
-  --card-opacity: 1;
-  box-shadow: 0 20px 60px -10px rgba(139, 92, 246, 0.4);
+  box-shadow:
+    0 30px 60px -12px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
+/* Radial specular shine — follows cursor, sits on top of image */
 .holo-card::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background-image:
-    conic-gradient(
-      from 133deg at var(--pointer-x) var(--pointer-y),
-      transparent 0%,
-      hsl(180 100% 75%) 4%,
-      transparent 12%,
-      transparent 22%,
-      hsl(270 100% 75%) 26%,
-      transparent 34%,
-      transparent 44%,
-      hsl(320 100% 75%) 48%,
-      transparent 56%,
-      transparent 66%,
-      hsl(60 100% 75%) 70%,
-      transparent 78%
-    );
-  mix-blend-mode: color-dodge;
-  opacity: calc(var(--card-opacity) * 0.7);
-  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    ellipse 80% 80% at var(--pointer-x) var(--pointer-y),
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    transparent 65%
+  );
+  mix-blend-mode: overlay;
+  opacity: var(--shine-opacity);
+  transition: opacity 0.25s ease;
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
-.holo-card::after {
+/* Rainbow foil layer — only on holo/ultra tier cards */
+.holo-card[data-tier='holo']::after,
+.holo-card[data-tier='ultra']::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
   background:
+    repeating-linear-gradient(
+      0deg,
+      hsla(0,   100%, 70%, 0.15) 0px,
+      hsla(30,  100%, 70%, 0.15) 4px,
+      hsla(60,  100%, 70%, 0.15) 8px,
+      hsla(120, 100%, 70%, 0.15) 12px,
+      hsla(180, 100%, 70%, 0.15) 16px,
+      hsla(240, 100%, 70%, 0.15) 20px,
+      hsla(300, 100%, 70%, 0.15) 24px,
+      hsla(360, 100%, 70%, 0.15) 28px
+    ),
     radial-gradient(
-      ellipse at var(--pointer-x) var(--pointer-y),
-      rgba(255, 255, 255, 0.15) 0%,
-      transparent 60%
+      ellipse 60% 80% at var(--pointer-x) var(--pointer-y),
+      rgba(255, 255, 255, 0.5) 0%,
+      transparent 70%
     );
-  opacity: var(--card-opacity);
-  transition: opacity 0.3s ease;
+  mix-blend-mode: color-dodge;
+  opacity: var(--foil-opacity);
+  transition: opacity 0.25s ease;
   pointer-events: none;
-  z-index: 2;
+  z-index: 3;
 }
 
-/* Rarity glow colours */
-.rarity-common    { --rarity-color: theme('colors.slate.400'); }
-.rarity-uncommon  { --rarity-color: theme('colors.green.400'); }
-.rarity-rare      { --rarity-color: theme('colors.blue.400'); }
-.rarity-secretrare {
-  --rarity-color: theme('colors.violet.400');
-  background: linear-gradient(135deg, theme('colors.violet.950') 0%, theme('colors.slate.900') 100%);
-}
-
-.holo-card:hover {
-  box-shadow: 0 0 0 1px var(--rarity-color, theme('colors.violet.500')),
-              0 20px 60px -10px color-mix(in srgb, var(--rarity-color, theme('colors.violet.500')) 50%, transparent);
+/* Ultra rarity: stronger tinted glow */
+.holo-card[data-tier='ultra']:hover {
+  box-shadow:
+    0 30px 80px -10px rgba(139, 92, 246, 0.5),
+    0 0 0 1px rgba(167, 139, 250, 0.3);
 }
