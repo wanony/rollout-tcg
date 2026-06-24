@@ -30,7 +30,10 @@ export default function CommandPalette({ open, onClose, pageCommands = [] }: Com
   }, [open])
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape' && open) onClose() }
+    if (!open) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
   }, [open, onClose])
@@ -58,11 +61,10 @@ export default function CommandPalette({ open, onClose, pageCommands = [] }: Com
         onClick={onClose}
       />
       {/* Panel */}
-      <div className="relative w-full max-w-lg mx-4">
-        <Command
-          className="rounded-2xl border border-slate-700/60 bg-slate-950/95 shadow-2xl overflow-hidden"
-          loop
-        >
+      <Command
+        className="relative w-full max-w-lg rounded-2xl border border-slate-700/60 bg-slate-950/95 shadow-2xl overflow-hidden"
+        loop
+      >
           <div className="border-b border-slate-700/50 px-4 flex items-center justify-between">
             <Command.Input
               ref={inputRef}
@@ -94,8 +96,7 @@ export default function CommandPalette({ open, onClose, pageCommands = [] }: Com
               </Command.Group>
             ))}
           </Command.List>
-        </Command>
-      </div>
+      </Command>
     </div>,
     document.body,
   )
