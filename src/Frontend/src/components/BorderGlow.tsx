@@ -1,20 +1,19 @@
 import { useRef, useCallback, useEffect, ReactNode, CSSProperties } from 'react'
 import './BorderGlow.css'
 
-function parseHSL(hslStr: string) {
-  const match = hslStr.match(/([\d.]+)\s*([\d.]+)%?\s*([\d.]+)%?/)
-  if (!match) return { h: 40, s: 80, l: 80 }
-  return { h: parseFloat(match[1]), s: parseFloat(match[2]), l: parseFloat(match[3]) }
+function parseRGB(rgbStr: string): { r: number; g: number; b: number } {
+  const parts = rgbStr.trim().split(/\s+/).map(Number)
+  return { r: parts[0] ?? 139, g: parts[1] ?? 92, b: parts[2] ?? 246 }
 }
 
 function buildGlowVars(glowColor: string, intensity: number): Record<string, string> {
-  const { h, s, l } = parseHSL(glowColor)
-  const base = `${h}deg ${s}% ${l}%`
+  const { r, g, b } = parseRGB(glowColor)
+  const base = `${r} ${g} ${b}`
   const opacities = [100, 60, 50, 40, 30, 20, 10]
   const keys = ['', '-60', '-50', '-40', '-30', '-20', '-10']
   const vars: Record<string, string> = {}
   for (let i = 0; i < opacities.length; i++) {
-    vars[`--glow-color${keys[i]}`] = `hsl(${base} / ${Math.min(opacities[i] * intensity, 100)}%)`
+    vars[`--glow-color${keys[i]}`] = `rgb(${base} / ${Math.min(opacities[i] * intensity, 100)}%)`
   }
   return vars
 }
@@ -58,6 +57,7 @@ interface BorderGlowProps {
   glowColor?: string
   backgroundColor?: string
   borderRadius?: number
+  borderWidth?: number
   glowRadius?: number
   glowIntensity?: number
   coneSpread?: number
@@ -70,9 +70,10 @@ export default function BorderGlow({
   children,
   className = '',
   edgeSensitivity = 30,
-  glowColor = '40 80 80',
+  glowColor = '139 92 246',
   backgroundColor = '#120F17',
   borderRadius = 28,
+  borderWidth = 1,
   glowRadius = 40,
   glowIntensity = 1.0,
   coneSpread = 25,
@@ -132,6 +133,12 @@ export default function BorderGlow({
     })
   }, [animated])
 
+  useEffect(() => {
+    const card = cardRef.current
+    if (!card) return
+    card.style.setProperty('--border-width', `${borderWidth}px`)
+  }, [borderWidth])
+
   return (
     <div
       ref={cardRef}
@@ -141,6 +148,7 @@ export default function BorderGlow({
         '--card-bg': backgroundColor,
         '--edge-sensitivity': edgeSensitivity,
         '--border-radius': `${borderRadius}px`,
+        '--border-width': `${borderWidth}px`,
         '--glow-padding': `${glowRadius}px`,
         '--cone-spread': coneSpread,
         '--fill-opacity': fillOpacity,
