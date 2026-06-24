@@ -41,6 +41,7 @@ public class MarketplaceFixture : WebApplicationFactory<Program>, IAsyncLifetime
             {
                 ["ConnectionStrings:MarketplaceDb"] = _postgres.GetConnectionString(),
                 ["RabbitMq:Host"] = _rabbitmq.Hostname,
+                ["RabbitMq:Port"] = _rabbitmq.GetMappedPublicPort(5672).ToString(),
                 ["RabbitMq:Username"] = RabbitMqUsername,
                 ["RabbitMq:Password"] = RabbitMqPassword
             }));

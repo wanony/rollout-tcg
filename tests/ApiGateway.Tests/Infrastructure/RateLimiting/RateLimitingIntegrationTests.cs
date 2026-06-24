@@ -16,13 +16,13 @@ public class RateLimitingIntegrationTests(ApiGatewayFixture fixture)
         // First 3 requests should succeed (limit = 3 in test fixture)
         for (var i = 0; i < 3; i++)
         {
-            var response = await client.GetAsync("/");
+            var response = await client.GetAsync("/health");
             response.StatusCode.Should().Be(HttpStatusCode.OK,
                 $"request {i + 1} of 3 should be allowed");
         }
 
         // 4th request should be rate limited
-        var limitedResponse = await client.GetAsync("/");
+        var limitedResponse = await client.GetAsync("/health");
         limitedResponse.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
         limitedResponse.Headers.Should().ContainKey("Retry-After");
     }
@@ -39,13 +39,13 @@ public class RateLimitingIntegrationTests(ApiGatewayFixture fixture)
         // First 5 requests should succeed (authenticated limit = 5 in test fixture)
         for (var i = 0; i < 5; i++)
         {
-            var response = await client.GetAsync("/");
+            var response = await client.GetAsync("/health");
             response.StatusCode.Should().Be(HttpStatusCode.OK,
                 $"request {i + 1} of 5 should be allowed");
         }
 
         // 6th request should be rate limited
-        var limitedResponse = await client.GetAsync("/");
+        var limitedResponse = await client.GetAsync("/health");
         limitedResponse.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
         limitedResponse.Headers.Should().ContainKey("Retry-After");
     }
@@ -63,7 +63,7 @@ public class RateLimitingIntegrationTests(ApiGatewayFixture fixture)
 
         for (var i = 0; i < 4; i++)
         {
-            var response = await client.GetAsync("/");
+            var response = await client.GetAsync("/health");
             response.StatusCode.Should().Be(HttpStatusCode.OK,
                 $"authenticated user should use the 5-request limit, not the 3-request limit; " +
                 $"request {i + 1} should be allowed");

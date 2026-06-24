@@ -15,7 +15,7 @@ public static class MessagingExtensions
             x.AddConsumer<ListingPurchasedConsumer>();
             x.UsingRabbitMq((ctx, cfg) =>
             {
-                cfg.Host(config["RabbitMq:Host"]!, "/", h =>
+                cfg.Host(config["RabbitMq:Host"]!, config.GetValue<ushort>("RabbitMq:Port", 5672), "/", h =>
                 {
                     h.Username(config["RabbitMq:Username"] ?? "guest");
                     h.Password(config["RabbitMq:Password"] ?? "guest");
