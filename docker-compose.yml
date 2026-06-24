@@ -202,7 +202,7 @@ services:
       context: .
       dockerfile: src/ApiGateway/Dockerfile
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:5000
       Redis__ConnectionString: "redis:6379"
       Cors__AllowedOrigins: "http://localhost,http://100.77.135.111"
