@@ -9,54 +9,9 @@ permissions:
   packages: write
 
 jobs:
-  changes:
-    name: Detect changes
-    runs-on: ubuntu-latest
-    outputs:
-      shared: ${{ steps.filter.outputs.shared }}
-      api-gateway: ${{ steps.filter.outputs.api-gateway }}
-      card-catalog: ${{ steps.filter.outputs.card-catalog }}
-      identity-service: ${{ steps.filter.outputs.identity-service }}
-      marketplace: ${{ steps.filter.outputs.marketplace }}
-      notification: ${{ steps.filter.outputs.notification }}
-      portfolio: ${{ steps.filter.outputs.portfolio }}
-      pricing: ${{ steps.filter.outputs.pricing }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Detect changed paths
-        uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            shared:
-              - 'src/SharedKernel/**'
-              - 'Directory.Build.props'
-              - 'Directory.Packages.props'
-              - '.github/workflows/docker.yml'
-            api-gateway:
-              - 'src/ApiGateway/**'
-            card-catalog:
-              - 'src/CardCatalog/**'
-            identity-service:
-              - 'src/IdentityService/**'
-            marketplace:
-              - 'src/Marketplace/**'
-            notification:
-              - 'src/Notification/**'
-            portfolio:
-              - 'src/Portfolio/**'
-            pricing:
-              - 'src/Pricing/**'
-
   build:
     name: Build & push ${{ matrix.service.name }}
     runs-on: ubuntu-latest
-    needs: [changes]
-    if: >-
-      needs.changes.outputs.shared == 'true' ||
-      fromJson(toJson(needs.changes.outputs))[matrix.service.name] == 'true'
     strategy:
       fail-fast: false
       matrix:
