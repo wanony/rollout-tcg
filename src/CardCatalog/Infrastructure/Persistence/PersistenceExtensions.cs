@@ -7,11 +7,9 @@ public static class PersistenceExtensions
 {
     public static IHostApplicationBuilder AddPersistence(this IHostApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("CardDb")
-            ?? throw new InvalidOperationException("ConnectionStrings:CardDb is not configured.");
-
         builder.Services.AddDbContext<CardCatalogDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("CardDb")
+                ?? throw new InvalidOperationException("ConnectionStrings:CardDb is not configured.")));
 
         builder.Services.AddScoped<ICardRepository, CardRepository>();
 

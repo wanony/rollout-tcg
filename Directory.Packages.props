@@ -6,9 +6,9 @@
     <PackageVersion Include="MassTransit" Version="8.3.0" />
     <PackageVersion Include="MassTransit.RabbitMQ" Version="8.3.0" />
     <PackageVersion Include="MassTransit.AzureServiceBus" Version="8.3.0" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
     <PackageVersion Include="MediatR" Version="12.4.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
@@ -21,7 +21,7 @@
     <PackageVersion Include="Testcontainers.RabbitMq" Version="3.10.0" />
     <PackageVersion Include="Duende.IdentityServer" Version="7.0.6" />
     <PackageVersion Include="Duende.IdentityServer.AspNetIdentity" Version="7.0.6" />
-    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.9" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
     <!-- OpenTelemetry -->
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.16.0" />
@@ -47,7 +47,7 @@
     <PackageVersion Include="Testcontainers" Version="3.10.0" />
     <!-- Pricing -->
     <PackageVersion Include="Dapper" Version="2.1.35" />
-    <PackageVersion Include="Npgsql" Version="10.0.0" />
+    <PackageVersion Include="Npgsql" Version="10.0.3" />
     <!-- API Gateway -->
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
