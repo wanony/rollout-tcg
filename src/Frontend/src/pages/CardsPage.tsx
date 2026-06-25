@@ -7,7 +7,7 @@ import HoloCard from '../components/HoloCard'
 import CardDetailModal from '../components/CardDetailModal'
 import FilterChips from '../components/FilterChips'
 import SortDropdown from '../components/SortDropdown'
-import AutocompleteDropdown from '../components/AutocompleteDropdown'
+import AutocompleteDropdown, { AutocompleteDropdownHandle } from '../components/AutocompleteDropdown'
 import { PageCommandsContext } from '../components/CommandPalette'
 
 function TypeBadge({ type }: { type: string }) {
@@ -34,6 +34,7 @@ function marketPrice(card: PokemonCard): string | null {
 
 export default function CardsPage() {
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const autocompleteRef = useRef<AutocompleteDropdownHandle>(null)
   const sentinelRef = useRef<HTMLDivElement>(null)
   const setPageCommands = useContext(PageCommandsContext)
 
@@ -97,7 +98,9 @@ export default function CardsPage() {
     staleTime: 5 * 60 * 1000,
   })
 
-  const cards = data?.pages.flatMap(p => p.data) ?? []
+  const rawCards = data?.pages.flatMap(p => p.data) ?? []
+  const seen = new Set<string>()
+  const cards = rawCards.filter(c => seen.has(c.id) ? false : (seen.add(c.id), true))
   const totalCount = data?.pages[0]?.totalCount ?? 0
 
   // Infinite scroll sentinel
@@ -132,6 +135,10 @@ export default function CardsPage() {
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
             onKeyDown={e => {
+              if (showSuggestions) {
+                autocompleteRef.current?.handleKeyDown(e)
+                if (e.defaultPrevented) return
+              }
               if (e.key === 'Enter') { setFilters(f => ({ ...f, name: nameInput || undefined })); setShowSuggestions(false) }
             }}
             placeholder="Search Pokémon cards…"
@@ -139,6 +146,7 @@ export default function CardsPage() {
           />
           {showSuggestions && (
             <AutocompleteDropdown
+              ref={autocompleteRef}
               query={nameInput}
               onSelect={handleSelectSuggestion}
               onClose={() => setShowSuggestions(false)}
@@ -188,7 +196,7 @@ export default function CardsPage() {
             const price = marketPrice(card)
             return (
               <motion.div
-                key={`${card.id}-${i}`}
+                key={card.id}
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: Math.min((i % 20) * 0.04, 0.5), duration: 0.25 }}
