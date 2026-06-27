@@ -7,9 +7,20 @@ interface PriceTier {
   market: number
 }
 
+export interface CardmarketPricing {
+  unit: string
+  avg?: number
+  low?: number
+  trend?: number
+  avg1?: number
+  avg7?: number
+  avg30?: number
+}
+
 export interface PokemonCard {
   id: string
   name: string
+  illustrator?: string
   rarity: string
   set: { id: string; name: string; series: string }
   types?: string[]
@@ -23,6 +34,7 @@ export interface PokemonCard {
       reverseHolofoil?: PriceTier
     }
   }
+  cardmarket?: CardmarketPricing
 }
 
 export interface PokemonCardPage {
@@ -45,6 +57,7 @@ export interface CardFilters {
   type?: string
   rarity?: string
   setId?: string
+  illustrator?: string
   sort?: 'newest' | 'price-asc' | 'price-desc' | 'name'
 }
 
@@ -63,15 +76,32 @@ interface TcgdexPriceTier {
   marketPrice?: number
 }
 
+interface TcgdexPricing {
+  tcgplayer?: {
+    unit?: string
+    normal?: TcgdexPriceTier
+    holofoil?: TcgdexPriceTier
+    'reverse-holofoil'?: TcgdexPriceTier
+  }
+  cardmarket?: {
+    unit?: string
+    avg?: number
+    low?: number
+    trend?: number
+    avg1?: number
+    avg7?: number
+    avg30?: number
+  }
+}
+
 interface TcgdexFullCard extends TcgdexListCard {
   category: string
+  illustrator?: string
   rarity?: string
   types?: string[]
-  hp?: string
+  hp?: string | number
   set: { id: string; name: string; serie?: { name: string } }
-  pricing?: {
-    tcgplayer?: { normal?: TcgdexPriceTier; holofoil?: TcgdexPriceTier; reverseHolofoil?: TcgdexPriceTier }
-  }
+  pricing?: TcgdexPricing
 }
 
 interface TcgdexSet {
@@ -100,13 +130,17 @@ function mapListCard(c: TcgdexListCard): PokemonCard {
     },
     supertype: 'Pokemon',
     tcgplayer: undefined,
+    cardmarket: undefined,
   }
 }
 
 function mapFullCard(c: TcgdexFullCard): PokemonCard {
+  const tcp = c.pricing?.tcgplayer
+  const cm = c.pricing?.cardmarket
   return {
     id: c.id,
     name: c.name,
+    illustrator: c.illustrator,
     rarity: c.rarity ?? 'Unknown',
     set: { id: c.set.id, name: c.set.name, series: c.set.serie?.name ?? '' },
     types: c.types,
@@ -116,9 +150,22 @@ function mapFullCard(c: TcgdexFullCard): PokemonCard {
       large: c.image ? `${c.image}/high.webp` : '',
     },
     supertype: c.category,
-    tcgplayer: c.pricing?.tcgplayer
-      ? { prices: { normal: mapTier(c.pricing.tcgplayer.normal), holofoil: mapTier(c.pricing.tcgplayer.holofoil), reverseHolofoil: mapTier(c.pricing.tcgplayer.reverseHolofoil) } }
-      : undefined,
+    tcgplayer: tcp ? {
+      prices: {
+        normal: mapTier(tcp.normal),
+        holofoil: mapTier(tcp.holofoil),
+        reverseHolofoil: mapTier(tcp['reverse-holofoil']),
+      },
+    } : undefined,
+    cardmarket: cm ? {
+      unit: cm.unit ?? 'EUR',
+      avg: cm.avg,
+      low: cm.low,
+      trend: cm.trend,
+      avg1: cm.avg1,
+      avg7: cm.avg7,
+      avg30: cm.avg30,
+    } : undefined,
   }
 }
 
@@ -135,12 +182,13 @@ export async function searchPokemonCards(
   pageSize = 20,
 ): Promise<PokemonCardPage> {
   const params = new URLSearchParams()
-  const hasFilter = !!(filters.name || filters.type || filters.rarity || filters.setId)
-  if (filters.name)   params.set('name', filters.name)
-  if (filters.type)   params.set('types', filters.type)
-  if (filters.rarity) params.set('rarity', filters.rarity)
-  if (filters.setId)  params.set('set', filters.setId)
-  if (!hasFilter)     params.set('set', 'sv10')
+  const hasFilter = !!(filters.name || filters.type || filters.rarity || filters.setId || filters.illustrator)
+  if (filters.name)        params.set('name', filters.name)
+  if (filters.type)        params.set('types', filters.type)
+  if (filters.rarity)      params.set('rarity', filters.rarity)
+  if (filters.setId)       params.set('set', filters.setId)
+  if (filters.illustrator) params.set('illustrator', filters.illustrator)
+  if (!hasFilter)          params.set('set', 'sv10')
 
   const all = (await fetchFiltered(params)).filter(c => c.image)
 

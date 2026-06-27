@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import BorderGlow from './BorderGlow'
 import { primaryGlow, TYPE_GLOW } from '../lib/typeColors'
-import { PokemonCard, fetchCardById } from '../api/pokemontcg'
+import { PokemonCard, CardmarketPricing, fetchCardById } from '../api/pokemontcg'
 import { addCardToPortfolio } from '../api/portfolio'
 import { useAuth } from '../auth/useAuth'
 
@@ -29,16 +29,34 @@ function TypeBadge({ type }: { type: string }) {
   )
 }
 
-function PriceSparkline({ glowColor }: { glowColor: string }) {
-  // ponytail: no backend price history; mock until card-ID mapping lands
-  const data = useMemo(
-    () => Array.from({ length: 30 }, (_, i) => 5 + Math.sin(i * 0.4) * 2 + Math.random() * 0.5),
-    [],
-  )
+function PriceSparkline({ glowColor, cardmarket }: { glowColor: string; cardmarket?: CardmarketPricing }) {
+  const data = useMemo(() => {
+    // Use real Cardmarket rolling averages when available (avg30→avg7→avg1→trend)
+    const cm = cardmarket
+    if (cm?.avg30 != null && cm?.avg7 != null && cm?.avg1 != null) {
+      const anchors: [number, number][] = [
+        [0,  cm.avg30],
+        [23, cm.avg7],
+        [29, cm.avg1],
+        [30, cm.trend ?? cm.avg ?? cm.avg1],
+      ]
+      return Array.from({ length: 31 }, (_, i) => {
+        for (let a = 1; a < anchors.length; a++) {
+          const [x0, y0] = anchors[a - 1], [x1, y1] = anchors[a]
+          if (i <= x1) return y0 + (y1 - y0) * ((i - x0) / (x1 - x0))
+        }
+        return anchors[anchors.length - 1][1]
+      })
+    }
+    // Fallback: neutral flat line while data loads
+    return Array.from({ length: 30 }, () => 1)
+  }, [cardmarket])
+
   const W = 400, H = 100, PX = 4, PY = 6
   const min = Math.min(...data), max = Math.max(...data)
+  const flat = max === min
   const px = (i: number) => PX + (i / (data.length - 1)) * (W - PX * 2)
-  const py = (v: number) => H - PY - ((v - min) / (max - min || 1)) * (H - PY * 2)
+  const py = (v: number) => flat ? H / 2 : H - PY - ((v - min) / (max - min)) * (H - PY * 2)
   const pts = data.map((v, i) => `${i === 0 ? 'M' : 'L'}${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(' ')
   const area = `${pts} L${px(data.length - 1).toFixed(1)},${H} L${px(0).toFixed(1)},${H} Z`
   const color = `rgb(${glowColor})`
@@ -48,12 +66,12 @@ function PriceSparkline({ glowColor }: { glowColor: string }) {
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[100px]" preserveAspectRatio="none">
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={0.35} />
+          <stop offset="0%" stopColor={color} stopOpacity={flat ? 0.1 : 0.35} />
           <stop offset="100%" stopColor={color} stopOpacity={0} />
         </linearGradient>
       </defs>
       <path d={area} fill={`url(#${gradId})`} />
-      <path d={pts} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" />
+      <path d={pts} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeOpacity={flat ? 0.3 : 1} />
     </svg>
   )
 }
@@ -151,6 +169,9 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
                     </span>
                   )}
                 </p>
+                {card.illustrator && (
+                  <p className="mt-1 text-xs text-slate-500">Illus. {card.illustrator}</p>
+                )}
               </div>
 
               {/* Type badges */}
@@ -162,21 +183,21 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
                 </div>
               )}
 
-              {/* Price sparkline */}
+              {/* Price sparkline — real Cardmarket 30d data when available */}
               <div>
                 <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-500">
-                  Price trend (30d)
+                  {card.cardmarket ? 'Cardmarket trend (30d · EUR)' : 'Price trend (30d)'}
                 </p>
-                <PriceSparkline glowColor={glowColor} />
+                <PriceSparkline glowColor={glowColor} cardmarket={card.cardmarket} />
               </div>
 
-              {/* TCGPlayer price tiers */}
+              {/* TCGPlayer USD prices */}
               {hasPrices && (
                 <div>
                   <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">
-                    TCGPlayer prices
+                    TCGPlayer (USD)
                   </p>
-                  <dl className="grid grid-cols-3 gap-3">
+                  <dl className="grid grid-cols-3 gap-2">
                     {prices.normal?.market != null && (
                       <div className="rounded-lg bg-slate-800/60 px-3 py-2">
                         <dt className="text-xs text-slate-500">Normal</dt>
@@ -198,6 +219,41 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
                         <dt className="text-xs text-slate-500">Rev. Holo</dt>
                         <dd className="mt-0.5 text-sm font-semibold text-slate-200">
                           ${prices.reverseHolofoil.market.toFixed(2)}
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
+                </div>
+              )}
+
+              {/* Cardmarket EUR prices */}
+              {card.cardmarket && (
+                <div>
+                  <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">
+                    Cardmarket (EUR)
+                  </p>
+                  <dl className="grid grid-cols-3 gap-2">
+                    {card.cardmarket.trend != null && (
+                      <div className="rounded-lg bg-slate-800/60 px-3 py-2">
+                        <dt className="text-xs text-slate-500">Trend</dt>
+                        <dd className="mt-0.5 text-sm font-semibold text-slate-200">
+                          €{card.cardmarket.trend.toFixed(2)}
+                        </dd>
+                      </div>
+                    )}
+                    {card.cardmarket.avg7 != null && (
+                      <div className="rounded-lg bg-slate-800/60 px-3 py-2">
+                        <dt className="text-xs text-slate-500">7d avg</dt>
+                        <dd className="mt-0.5 text-sm font-semibold text-slate-200">
+                          €{card.cardmarket.avg7.toFixed(2)}
+                        </dd>
+                      </div>
+                    )}
+                    {card.cardmarket.avg30 != null && (
+                      <div className="rounded-lg bg-slate-800/60 px-3 py-2">
+                        <dt className="text-xs text-slate-500">30d avg</dt>
+                        <dd className="mt-0.5 text-sm font-semibold text-slate-200">
+                          €{card.cardmarket.avg30.toFixed(2)}
                         </dd>
                       </div>
                     )}

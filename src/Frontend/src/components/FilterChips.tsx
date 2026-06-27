@@ -11,7 +11,7 @@ interface FilterChipsProps {
 }
 
 export default function FilterChips({ filters, onChange, sets }: FilterChipsProps) {
-  const hasActiveFilter = !!(filters.name || filters.type || filters.rarity || filters.setId)
+  const hasActiveFilter = !!(filters.name || filters.type || filters.rarity || filters.setId || filters.illustrator)
 
   function setType(type: string) {
     onChange({ ...filters, type: filters.type === type ? undefined : type })
@@ -77,6 +77,14 @@ export default function FilterChips({ filters, onChange, sets }: FilterChipsProp
             ))}
           </select>
         )}
+
+        <input
+          type="text"
+          placeholder="Artist…"
+          value={filters.illustrator ?? ''}
+          onChange={e => onChange({ ...filters, illustrator: e.target.value || undefined })}
+          className="w-28 rounded-lg border border-slate-700/60 bg-slate-900 px-2.5 py-1 text-xs text-slate-200 placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+        />
 
         {hasActiveFilter && (
           <button
