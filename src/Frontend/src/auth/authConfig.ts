@@ -1,4 +1,4 @@
-export const IDENTITY_URL = `http://${window.location.hostname}:5001`
+export const IDENTITY_URL = window.location.origin
 
 export const oidcSettings = {
   authority: IDENTITY_URL,

@@ -205,7 +205,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:5000
       Redis__ConnectionString: "redis:6379"
-      Cors__AllowedOrigins: "http://localhost,http://100.77.135.111"
+      Cors__AllowedOrigins: "http://localhost,https://rollout.wanony.dev"
     ports:
       - "5010:5000"
     depends_on:
@@ -294,7 +294,7 @@ services:
       - ./infra/grafana/dashboards:/etc/grafana/dashboards
       - grafana_data:/var/lib/grafana
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - tempo
       - prometheus

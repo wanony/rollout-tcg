@@ -136,7 +136,7 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
-        className="relative z-10 w-full max-w-3xl"
+        className="relative z-10 w-full max-w-3xl max-h-[90dvh] overflow-y-auto rounded-3xl"
       >
         <GlassSurface
           width="100%"
@@ -152,7 +152,7 @@ export default function CardDetailModal({ card, onClose }: CardDetailModalProps)
               <img
                 src={card.images.large}
                 alt={card.name}
-                className="max-h-[420px] w-auto rounded-xl object-contain shadow-2xl"
+                className="max-h-[220px] w-auto rounded-xl object-contain shadow-2xl sm:max-h-[420px]"
                 onError={(e) => {
                   const img = e.currentTarget
                   img.style.display = 'none'

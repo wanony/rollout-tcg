@@ -18,7 +18,7 @@ function Logo() {
   )
 }
 
-function NavLink({ to, icon, label }: { to: string; icon: string; label: string }) {
+function NavLink({ to, label }: { to: string; label: string }) {
   const { sweep } = useGlimm()
   const navigate = useNavigate()
   const location = useLocation()
@@ -26,13 +26,12 @@ function NavLink({ to, icon, label }: { to: string; icon: string; label: string 
   return (
     <button
       onClick={() => sweep(() => navigate(to))}
-      className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors sm:px-3
+      className={`rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors sm:px-3
         ${active
           ? 'bg-violet-500/20 text-violet-300'
           : 'text-slate-400 hover:bg-white/10 hover:text-slate-100'}`}
     >
-      <span>{icon}</span>
-      <span className="hidden sm:block">{label}</span>
+      {label}
     </button>
   )
 }
@@ -54,9 +53,9 @@ export default function Navbar() {
         <div className="flex h-14 w-full items-center gap-1 px-4 sm:gap-3">
           <Logo />
 
-          <NavLink to="/cards" icon="🃏" label="Cards" />
-          <NavLink to="/portfolio" icon="📦" label="Portfolio" />
-          <NavLink to="/marketplace" icon="🏪" label="Market" />
+          <NavLink to="/cards" label="Cards" />
+          <NavLink to="/portfolio" label="Portfolio" />
+          <NavLink to="/marketplace" label="Market" />
 
           <div className="ml-auto flex items-center gap-2">
             {user ? (
