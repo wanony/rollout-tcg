@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { useEffect, ReactNode, useState, useMemo } from 'react'
+import { useEffect, ReactNode, useState, useMemo, useCallback } from 'react'
 import { useAuth } from './auth/useAuth'
 import { setAuthToken } from './api/client'
 import Navbar from './components/Navbar'
@@ -13,6 +13,7 @@ import NewListingPage from './pages/NewListingPage'
 import NotificationsPage from './pages/NotificationsPage'
 import DitherBackground from './components/DitherBackground'
 import ScrollToTopFAB from './components/ScrollToTopFAB'
+import { DitherColorContext } from './components/DitherColorContext'
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user, isLoading, login } = useAuth()
@@ -38,11 +39,15 @@ export default function App() {
   const location = useLocation()
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [pageCommands, setPageCommands] = useState<PaletteCommand[]>([])
+  const [ditherOverride, setDitherOverride] = useState<[number, number, number] | null>(null)
 
-  const ditherColor = useMemo(() => {
+  const routeColor = useMemo(() => {
     const match = Object.keys(ROUTE_COLORS).find(r => location.pathname.startsWith(r))
     return match ? ROUTE_COLORS[match] : DEFAULT_COLOR
   }, [location.pathname])
+
+  const ditherColor = ditherOverride ?? routeColor
+  const setOverride = useCallback((c: [number, number, number] | null) => setDitherOverride(c), [])
 
   useEffect(() => {
     setAuthToken(user?.access_token ?? null)
@@ -67,6 +72,7 @@ export default function App() {
 
       <div className="relative z-10 min-h-screen">
         <Navbar />
+        <DitherColorContext.Provider value={setOverride}>
         <PageCommandsContext.Provider value={setPageCommands}>
           <main className="mx-auto w-full max-w-6xl px-3 pt-20 pb-4 sm:px-6 sm:pb-6">
             <Routes>
@@ -81,6 +87,7 @@ export default function App() {
             </Routes>
           </main>
         </PageCommandsContext.Provider>
+        </DitherColorContext.Provider>
       </div>
 
       <ScrollToTopFAB />

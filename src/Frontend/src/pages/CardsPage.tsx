@@ -9,6 +9,7 @@ import FilterChips from '../components/FilterChips'
 import SortDropdown from '../components/SortDropdown'
 import AutocompleteDropdown, { AutocompleteDropdownHandle } from '../components/AutocompleteDropdown'
 import { PageCommandsContext } from '../components/CommandPalette'
+import { useDitherOverride, typeGlowToDither } from '../components/DitherColorContext'
 
 function TypeBadge({ type }: { type: string }) {
   const rgb = TYPE_GLOW[type] ?? '100 116 139'
@@ -41,6 +42,13 @@ export default function CardsPage() {
   const [nameInput, setNameInput] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [filters, setFilters] = useState<CardFilters>({ sort: 'newest' })
+  const setDitherOverride = useDitherOverride()
+
+  useEffect(() => {
+    const rgb = filters.type ? TYPE_GLOW[filters.type] : null
+    setDitherOverride(rgb ? typeGlowToDither(rgb) : null)
+    return () => setDitherOverride(null)
+  }, [filters.type, setDitherOverride])
   const [selectedCard, setSelectedCard] = useState<PokemonCard | null>(null)
 
   // Debounce nameInput → filters.name
