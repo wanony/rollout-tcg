@@ -3,8 +3,6 @@ WORKDIR /app
 COPY package*.json .npmrc ./
 RUN npm ci
 COPY . .
-ARG VITE_PTCG_API_KEY
-ENV VITE_PTCG_API_KEY=$VITE_PTCG_API_KEY
 RUN npm run build
 
 FROM nginx:alpine AS final

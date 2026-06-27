@@ -226,8 +226,7 @@ services:
     build:
       context: src/Frontend
       dockerfile: Dockerfile
-      args:
-        VITE_PTCG_API_KEY: ${VITE_PTCG_API_KEY:-}
+
     ports:
       - "8080:80"
     depends_on:
