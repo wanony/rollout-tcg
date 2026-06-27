@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
+import { useQuery } from '@tanstack/react-query'
 import { createChart, ColorType, AreaSeries } from 'lightweight-charts'
 import GlassSurface from './GlassSurface'
 import BorderGlow from './BorderGlow'
 import { primaryGlow, TYPE_GLOW } from '../lib/typeColors'
-import { PokemonCard } from '../api/pokemontcg'
+import { PokemonCard, fetchCardById } from '../api/pokemontcg'
 import { addCardToPortfolio } from '../api/portfolio'
 import { useAuth } from '../auth/useAuth'
 
@@ -84,9 +85,18 @@ function PriceSparkline({ glowColor }: { glowColor: string }) {
   return <div ref={chartRef} className="w-full h-[120px]" />
 }
 
-export default function CardDetailModal({ card, onClose }: CardDetailModalProps) {
+export default function CardDetailModal({ card: cardProp, onClose }: CardDetailModalProps) {
   const { user } = useAuth()
   const [addState, setAddState] = useState<'idle' | 'loading' | 'done'>('idle')
+
+  // Enrich with full card data (list endpoint only has name + image)
+  const { data: fullCard } = useQuery({
+    queryKey: ['card', cardProp.id],
+    queryFn: () => fetchCardById(cardProp.id),
+    staleTime: 24 * 60 * 60 * 1000,
+  })
+  const card = fullCard ?? cardProp
+
   const glowColor = primaryGlow(card.types)
 
   const handleClose = useCallback(() => onClose(), [onClose])

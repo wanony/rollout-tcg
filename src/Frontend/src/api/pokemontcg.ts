@@ -48,7 +48,14 @@ export interface CardFilters {
   sort?: 'newest' | 'price-asc' | 'price-desc' | 'name'
 }
 
-// TCGdex raw shapes
+// TCGdex shapes
+interface TcgdexListCard {
+  id: string
+  name: string
+  image?: string
+  localId: string
+}
+
 interface TcgdexPriceTier {
   lowPrice?: number
   midPrice?: number
@@ -56,14 +63,11 @@ interface TcgdexPriceTier {
   marketPrice?: number
 }
 
-interface TcgdexCard {
-  id: string
-  name: string
+interface TcgdexFullCard extends TcgdexListCard {
   category: string
   rarity?: string
   types?: string[]
   hp?: string
-  image?: string
   set: { id: string; name: string; serie?: { name: string } }
   pricing?: {
     tcgplayer?: { normal?: TcgdexPriceTier; holofoil?: TcgdexPriceTier; reverseHolofoil?: TcgdexPriceTier }
@@ -82,14 +86,31 @@ function mapTier(t?: TcgdexPriceTier): PriceTier | undefined {
   return { low: t.lowPrice ?? 0, mid: t.midPrice ?? 0, high: t.highPrice ?? 0, market: t.marketPrice ?? 0 }
 }
 
-function mapCard(c: TcgdexCard): PokemonCard {
+function mapListCard(c: TcgdexListCard): PokemonCard {
+  return {
+    id: c.id,
+    name: c.name,
+    rarity: 'Unknown',
+    set: { id: '', name: '', series: '' },
+    types: undefined,
+    hp: undefined,
+    images: {
+      small: c.image ? `${c.image}/low.webp` : '',
+      large: c.image ? `${c.image}/high.webp` : '',
+    },
+    supertype: 'Pokemon',
+    tcgplayer: undefined,
+  }
+}
+
+function mapFullCard(c: TcgdexFullCard): PokemonCard {
   return {
     id: c.id,
     name: c.name,
     rarity: c.rarity ?? 'Unknown',
     set: { id: c.set.id, name: c.set.name, series: c.set.serie?.name ?? '' },
     types: c.types,
-    hp: c.hp,
+    hp: c.hp != null ? String(c.hp) : undefined,
     images: {
       small: c.image ? `${c.image}/low.webp` : '',
       large: c.image ? `${c.image}/high.webp` : '',
@@ -101,35 +122,47 @@ function mapCard(c: TcgdexCard): PokemonCard {
   }
 }
 
+// TCGdex returns all matching results with no server-side pagination — we slice client-side
+async function fetchFiltered(params: URLSearchParams): Promise<TcgdexListCard[]> {
+  const res = await fetch(`${BASE}/cards?${params}`)
+  if (!res.ok) throw new Error(`TCGdex API error: ${res.status}`)
+  return res.json()
+}
+
 export async function searchPokemonCards(
   filters: CardFilters = {},
   page = 1,
   pageSize = 20,
 ): Promise<PokemonCardPage> {
-  const params = new URLSearchParams({ page: String(page), itemsPerPage: String(pageSize) })
-  if (filters.name)   params.set('name', `${filters.name}*`)
+  const params = new URLSearchParams()
+  // Default to 'Pikachu' when no filters set so the initial view shows real cards
+  params.set('name', filters.name || 'Pikachu')
   if (filters.type)   params.set('types', filters.type)
   if (filters.rarity) params.set('rarity', filters.rarity)
-  if (filters.setId)  params.set('set.id', filters.setId)
-  // TCGdex supports orderBy for name; price sorts fall back to name
-  if (filters.sort === 'name') params.set('sort', 'name')
 
-  const res = await fetch(`${BASE}/cards?${params}`)
-  if (!res.ok) throw new Error(`TCGdex API error: ${res.status}`)
-  const raw: TcgdexCard[] = await res.json()
-  const data = raw.map(mapCard)
+  const all = await fetchFiltered(params)
 
-  // Client-side price sort (TCGdex doesn't support orderBy price)
-  if (filters.sort === 'price-asc' || filters.sort === 'price-desc') {
-    const dir = filters.sort === 'price-asc' ? 1 : -1
-    data.sort((a, b) => {
-      const pa = a.tcgplayer?.prices?.normal?.market ?? a.tcgplayer?.prices?.holofoil?.market ?? 0
-      const pb = b.tcgplayer?.prices?.normal?.market ?? b.tcgplayer?.prices?.holofoil?.market ?? 0
-      return (pa - pb) * dir
-    })
+  // Client-side sort
+  if (filters.sort === 'name') all.sort((a, b) => a.name.localeCompare(b.name))
+
+  const start = (page - 1) * pageSize
+  const slice = all.slice(start, start + pageSize)
+
+  return {
+    data: slice.map(mapListCard),
+    totalCount: all.length,
+    page,
+    pageSize,
+    count: slice.length,
   }
+}
 
-  return { data, totalCount: data.length < pageSize ? (page - 1) * pageSize + data.length : page * pageSize + pageSize, page, pageSize, count: data.length }
+// Called by CardDetailModal to get full card data including types, rarity, pricing
+export async function fetchCardById(id: string): Promise<PokemonCard> {
+  const res = await fetch(`${BASE}/cards/${encodeURIComponent(id)}`)
+  if (!res.ok) throw new Error(`TCGdex API error: ${res.status}`)
+  const raw: TcgdexFullCard = await res.json()
+  return mapFullCard(raw)
 }
 
 export async function fetchSets(): Promise<PokemonSet[]> {
@@ -147,10 +180,9 @@ export async function fetchSets(): Promise<PokemonSet[]> {
 export async function fetchAutocompleteSuggestions(name: string): Promise<string[]> {
   if (name.length < 2) return []
   try {
-    const params = new URLSearchParams({ name: `${name}*`, itemsPerPage: '10' })
-    const res = await fetch(`${BASE}/cards?${params}`)
+    const res = await fetch(`${BASE}/cards?name=${encodeURIComponent(name)}`)
     if (!res.ok) return []
-    const raw: TcgdexCard[] = await res.json()
+    const raw: TcgdexListCard[] = await res.json()
     return [...new Set(raw.map(c => c.name))].slice(0, 5)
   } catch {
     return []
