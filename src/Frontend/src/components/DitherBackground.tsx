@@ -17,9 +17,9 @@ export default function DitherBackground({ waveColor }: Pick<DitherProps, 'waveC
         waveColor={waveColor}
         waveSpeed={0.04}
         waveFrequency={3}
-        waveAmplitude={0.3}
-        colorNum={4}
-        pixelSize={2}
+        waveAmplitude={0.25}
+        colorNum={8}
+        pixelSize={1}
         enableMouseInteraction={true}
       />
     </DitherErrorBoundary>

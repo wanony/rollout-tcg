@@ -27,12 +27,12 @@ function RequireAuth({ children }: { children: ReactNode }) {
 
 // Route → dither color (RGB 0-1). Dark, saturated hues that read clearly on slate-950.
 const ROUTE_COLORS: Record<string, [number, number, number]> = {
-  '/cards':         [0.05, 0.18, 0.55],  // deep blue — card catalog
-  '/portfolio':     [0.05, 0.42, 0.18],  // dark green — wealth
-  '/marketplace':   [0.52, 0.26, 0.04],  // amber — trading
-  '/notifications': [0.08, 0.32, 0.38],  // teal — messages
+  '/cards':         [0.03, 0.10, 0.30],
+  '/portfolio':     [0.03, 0.22, 0.10],
+  '/marketplace':   [0.28, 0.14, 0.02],
+  '/notifications': [0.04, 0.17, 0.22],
 }
-const DEFAULT_COLOR: [number, number, number] = [0.05, 0.10, 0.35]
+const DEFAULT_COLOR: [number, number, number] = [0.03, 0.06, 0.18]
 
 export default function App() {
   const { user } = useAuth()
