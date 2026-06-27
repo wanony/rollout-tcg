@@ -140,7 +140,7 @@ export async function searchPokemonCards(
   if (filters.type)   params.set('types', filters.type)
   if (filters.rarity) params.set('rarity', filters.rarity)
   if (filters.setId)  params.set('set', filters.setId)
-  if (!hasFilter)     params.set('name', 'Pikachu')
+  if (!hasFilter)     params.set('set', 'sv10')
 
   const all = (await fetchFiltered(params)).filter(c => c.image)
 
