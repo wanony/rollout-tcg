@@ -194,13 +194,16 @@ function DitheredWaves({
     uniforms.current.resolution.value.set(size.width * dpr, size.height * dpr)
   }, [size, gl])
 
+  const targetColor = useRef(new THREE.Color(...waveColor))
+  useEffect(() => { targetColor.current.set(...waveColor) }, [waveColor])
+
   useFrame(({ clock }) => {
     const u = uniforms.current
     if (!disableAnimation) u.time.value = clock.getElapsedTime()
     u.waveSpeed.value = waveSpeed
     u.waveFrequency.value = waveFrequency
     u.waveAmplitude.value = waveAmplitude
-    u.waveColor.value.set(...waveColor)
+    u.waveColor.value.lerp(targetColor.current, 0.025)
     u.enableMouseInteraction.value = enableMouseInteraction ? 1 : 0
     u.mouseRadius.value = mouseRadius
     if (enableMouseInteraction) u.mousePos.value.copy(mouseRef.current)

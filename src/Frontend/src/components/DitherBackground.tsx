@@ -1,5 +1,5 @@
 import { Component, ReactNode } from 'react'
-import Dither from './Dither'
+import Dither, { DitherProps } from './Dither'
 
 class DitherErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false }
@@ -10,11 +10,11 @@ class DitherErrorBoundary extends Component<{ children: ReactNode }, { failed: b
   }
 }
 
-export default function DitherBackground() {
+export default function DitherBackground({ waveColor }: Pick<DitherProps, 'waveColor'>) {
   return (
     <DitherErrorBoundary>
       <Dither
-        waveColor={[0.3, 0.1, 0.5]}
+        waveColor={waveColor}
         waveSpeed={0.04}
         waveFrequency={3}
         waveAmplitude={0.3}

@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
-import { createChart, ColorType } from 'lightweight-charts'
 import BorderGlow from './BorderGlow'
 import { primaryGlow, TYPE_GLOW } from '../lib/typeColors'
 import { PokemonCard, fetchCardById } from '../api/pokemontcg'
@@ -31,57 +30,32 @@ function TypeBadge({ type }: { type: string }) {
 }
 
 function PriceSparkline({ glowColor }: { glowColor: string }) {
-  const chartRef = useRef<HTMLDivElement>(null)
+  // ponytail: no backend price history; mock until card-ID mapping lands
+  const data = useMemo(
+    () => Array.from({ length: 30 }, (_, i) => 5 + Math.sin(i * 0.4) * 2 + Math.random() * 0.5),
+    [],
+  )
+  const W = 400, H = 100, PX = 4, PY = 6
+  const min = Math.min(...data), max = Math.max(...data)
+  const px = (i: number) => PX + (i / (data.length - 1)) * (W - PX * 2)
+  const py = (v: number) => H - PY - ((v - min) / (max - min || 1)) * (H - PY * 2)
+  const pts = data.map((v, i) => `${i === 0 ? 'M' : 'L'}${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(' ')
+  const area = `${pts} L${px(data.length - 1).toFixed(1)},${H} L${px(0).toFixed(1)},${H} Z`
+  const color = `rgb(${glowColor})`
+  const gradId = `sg-${glowColor.replace(/\s/g, '')}`
 
-  useEffect(() => {
-    if (!chartRef.current) return
-    const chart = createChart(chartRef.current, {
-      width: chartRef.current.clientWidth,
-      height: 120,
-      layout: {
-        background: { type: ColorType.Solid, color: 'transparent' },
-        textColor: '#94a3b8',
-      },
-      grid: {
-        vertLines: { color: 'rgba(148, 163, 184, 0.1)' },
-        horzLines: { color: 'rgba(148, 163, 184, 0.1)' },
-      },
-      rightPriceScale: { borderColor: 'rgba(148, 163, 184, 0.2)' },
-      timeScale: { borderColor: 'rgba(148, 163, 184, 0.2)', timeVisible: false },
-      crosshair: { mode: 1 },
-    })
-
-    // ponytail: no backend sparkline data (pokemontcg IDs aren't GUIDs); mock until card-ID mapping is added
-    const series = chart.addAreaSeries({
-      lineColor: `rgb(${glowColor})`,
-      topColor: `rgb(${glowColor} / 0.3)`,
-      bottomColor: `rgb(${glowColor} / 0.0)`,
-      lineWidth: 2,
-    })
-
-    const today = Math.floor(Date.now() / 1000)
-    const DAY = 86400
-    const mockData = Array.from({ length: 30 }, (_, i) => ({
-      time: today - (29 - i) * DAY,
-      value: 5 + Math.sin(i * 0.4) * 2 + Math.random() * 0.5,
-    }))
-    series.setData(mockData as any)
-    chart.timeScale().fitContent()
-
-    const obs = new ResizeObserver(() => {
-      if (chartRef.current) {
-        chart.applyOptions({ width: chartRef.current.clientWidth })
-      }
-    })
-    obs.observe(chartRef.current)
-
-    return () => {
-      chart.remove()
-      obs.disconnect()
-    }
-  }, [glowColor])
-
-  return <div ref={chartRef} className="w-full h-[120px]" />
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[100px]" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.35} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#${gradId})`} />
+      <path d={pts} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" />
+    </svg>
+  )
 }
 
 export default function CardDetailModal({ card: cardProp, onClose }: CardDetailModalProps) {

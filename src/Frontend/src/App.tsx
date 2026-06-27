@@ -1,5 +1,5 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect, ReactNode, useState } from 'react'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useEffect, ReactNode, useState, useMemo } from 'react'
 import { useAuth } from './auth/useAuth'
 import { setAuthToken } from './api/client'
 import Navbar from './components/Navbar'
@@ -12,6 +12,7 @@ import MarketplacePage from './pages/MarketplacePage'
 import NewListingPage from './pages/NewListingPage'
 import NotificationsPage from './pages/NotificationsPage'
 import DitherBackground from './components/DitherBackground'
+import ScrollToTopFAB from './components/ScrollToTopFAB'
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user, isLoading, login } = useAuth()
@@ -23,10 +24,25 @@ function RequireAuth({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
+// Route → dither color (RGB 0-1). Dark, saturated hues that read clearly on slate-950.
+const ROUTE_COLORS: Record<string, [number, number, number]> = {
+  '/cards':         [0.05, 0.18, 0.55],  // deep blue — card catalog
+  '/portfolio':     [0.05, 0.42, 0.18],  // dark green — wealth
+  '/marketplace':   [0.52, 0.26, 0.04],  // amber — trading
+  '/notifications': [0.08, 0.32, 0.38],  // teal — messages
+}
+const DEFAULT_COLOR: [number, number, number] = [0.05, 0.10, 0.35]
+
 export default function App() {
   const { user } = useAuth()
+  const location = useLocation()
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [pageCommands, setPageCommands] = useState<PaletteCommand[]>([])
+
+  const ditherColor = useMemo(() => {
+    const match = Object.keys(ROUTE_COLORS).find(r => location.pathname.startsWith(r))
+    return match ? ROUTE_COLORS[match] : DEFAULT_COLOR
+  }, [location.pathname])
 
   useEffect(() => {
     setAuthToken(user?.access_token ?? null)
@@ -46,7 +62,7 @@ export default function App() {
   return (
     <div className="relative min-h-screen bg-slate-950">
       <div className="fixed inset-0 z-0">
-        <DitherBackground />
+        <DitherBackground waveColor={ditherColor} />
       </div>
 
       <div className="relative z-10 min-h-screen">
@@ -66,6 +82,8 @@ export default function App() {
           </main>
         </PageCommandsContext.Provider>
       </div>
+
+      <ScrollToTopFAB />
 
       <CommandPalette
         open={paletteOpen}
