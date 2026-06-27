@@ -63,8 +63,8 @@ const AutocompleteDropdown = forwardRef<AutocompleteDropdownHandle, Autocomplete
               aria-selected={i === activeIndex}
               className={`cursor-pointer px-4 py-2.5 text-sm transition-colors
                 ${i === activeIndex
-                  ? 'bg-violet-500/20 text-violet-200'
-                  : 'text-slate-200 hover:bg-violet-500/10 hover:text-slate-100'}`}
+                  ? 'bg-blue-500/20 text-blue-200'
+                  : 'text-slate-200 hover:bg-blue-500/10 hover:text-slate-100'}`}
               onMouseDown={(e) => { e.preventDefault(); onSelect(name) }}
               onMouseEnter={() => setActiveIndex(i)}
             >

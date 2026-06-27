@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { createChart, ColorType } from 'lightweight-charts'
-import GlassSurface from './GlassSurface'
 import BorderGlow from './BorderGlow'
 import { primaryGlow, TYPE_GLOW } from '../lib/typeColors'
 import { PokemonCard, fetchCardById } from '../api/pokemontcg'
@@ -16,7 +15,7 @@ interface CardDetailModalProps {
 }
 
 function TypeBadge({ type }: { type: string }) {
-  const rgb = TYPE_GLOW[type] ?? '139 92 246'
+  const rgb = TYPE_GLOW[type] ?? '100 116 139'
   return (
     <span
       className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
@@ -148,14 +147,7 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
         transition={{ duration: 0.2, ease: 'easeOut' }}
         className="relative z-10 w-full max-w-3xl max-h-[90dvh] overflow-y-auto rounded-3xl"
       >
-        <GlassSurface
-          width="100%"
-          height="auto"
-          borderRadius={24}
-          blur={16}
-          brightness={15}
-          opacity={0.95}
-        >
+        <div className="rounded-3xl border border-white/[0.08] bg-slate-900/95 backdrop-blur-xl shadow-2xl">
           <div className="flex w-full flex-col gap-6 p-6 sm:flex-row">
             {/* Card image */}
             <div className="flex flex-shrink-0 justify-center sm:justify-start">
@@ -243,10 +235,10 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
               {user && (
                 <div className="mt-auto pt-2">
                   <BorderGlow
-                    glowColor="139 92 246"
+                    glowColor="59 130 246"
                     backgroundColor="transparent"
                     borderRadius={12}
-                    colors={['#c084fc', '#818cf8', '#38bdf8']}
+                    colors={['#60a5fa', '#38bdf8', '#38bdf8']}
                     className="w-full"
                   >
                     <button
@@ -265,7 +257,7 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
               )}
             </div>
           </div>
-        </GlassSurface>
+        </div>
       </motion.div>
     </div>,
     document.body,

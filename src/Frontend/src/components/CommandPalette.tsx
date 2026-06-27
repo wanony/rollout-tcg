@@ -91,7 +91,7 @@ export default function CommandPalette({ open, onClose, pageCommands = [] }: Com
                     key={cmd.id}
                     value={cmd.label}
                     onSelect={cmd.action}
-                    className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-slate-300 aria-selected:bg-violet-500/20 aria-selected:text-violet-200"
+                    className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-slate-300 aria-selected:bg-blue-500/20 aria-selected:text-blue-200"
                   >
                     {cmd.label}
                   </Command.Item>

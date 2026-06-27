@@ -57,7 +57,7 @@ export default function FilterChips({ filters, onChange, sets }: FilterChipsProp
               onClick={() => setRarity(rarity)}
               className={`rounded-full px-2.5 py-1 text-xs font-medium transition-all
                 ${active
-                  ? 'bg-violet-500/20 border border-violet-500/50 text-violet-300'
+                  ? 'bg-blue-500/20 border border-blue-500/50 text-blue-300'
                   : 'bg-slate-800/60 border border-slate-700/40 text-slate-400 hover:text-slate-200'}`}
             >
               {rarity}
@@ -69,7 +69,7 @@ export default function FilterChips({ filters, onChange, sets }: FilterChipsProp
           <select
             value={filters.setId ?? ''}
             onChange={e => onChange({ ...filters, setId: e.target.value || undefined })}
-            className="rounded-lg border border-slate-700/60 bg-slate-900 px-3 py-1 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
+            className="rounded-lg border border-slate-700/60 bg-slate-900 px-3 py-1 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
           >
             <option value="">All sets</option>
             {sets.map(s => (

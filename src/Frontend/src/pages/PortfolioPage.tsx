@@ -42,7 +42,7 @@ export default function PortfolioPage() {
             { label: 'Cost', value: `$${summary.totalAcquisitionCostUsd.toFixed(2)}` },
           ].map(s => (
             <div key={s.label} className="text-center">
-              <div className="text-lg font-bold text-violet-300 sm:text-2xl">{s.value}</div>
+              <div className="text-lg font-bold text-blue-300 sm:text-2xl">{s.value}</div>
               <div className="text-xs text-slate-500">{s.label}</div>
             </div>
           ))}
@@ -52,7 +52,7 @@ export default function PortfolioPage() {
       {/* Add card toggle */}
       <button
         onClick={() => setShowForm(f => !f)}
-        className="mb-4 w-full rounded-xl border border-dashed border-slate-700 py-2.5 text-sm text-slate-400 transition-colors hover:border-violet-500 hover:text-violet-400"
+        className="mb-4 w-full rounded-xl border border-dashed border-slate-700 py-2.5 text-sm text-slate-400 transition-colors hover:border-blue-500 hover:text-blue-400"
       >
         {showForm ? '− Cancel' : '+ Add Card'}
       </button>
@@ -67,19 +67,19 @@ export default function PortfolioPage() {
         >
           <input required placeholder="Card name" value={form.cardName}
             onChange={e => setForm(f => ({ ...f, cardName: e.target.value }))}
-            className="col-span-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-violet-500 focus:outline-none sm:col-span-2" />
+            className="col-span-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none sm:col-span-2" />
           <input required type="number" min="1" placeholder="Qty" value={form.quantity}
             onChange={e => setForm(f => ({ ...f, quantity: e.target.value }))}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-violet-500 focus:outline-none" />
+            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none" />
           <input required type="number" step="0.01" placeholder="Price" value={form.acquisitionPriceUsd}
             onChange={e => setForm(f => ({ ...f, acquisitionPriceUsd: e.target.value }))}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-violet-500 focus:outline-none" />
+            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none" />
           <select value={form.condition} onChange={e => setForm(f => ({ ...f, condition: e.target.value }))}
-            className="col-span-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-violet-500 focus:outline-none">
+            className="col-span-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-blue-500 focus:outline-none">
             {CONDITIONS.map(c => <option key={c}>{c}</option>)}
           </select>
           <button type="submit" disabled={addMutation.isPending}
-            className="col-span-2 rounded-lg bg-violet-600 py-2 text-sm font-semibold text-white transition-colors hover:bg-violet-500 disabled:opacity-50">
+            className="col-span-2 rounded-lg bg-blue-600 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-50">
             {addMutation.isPending ? 'Adding…' : 'Add'}
           </button>
         </motion.form>

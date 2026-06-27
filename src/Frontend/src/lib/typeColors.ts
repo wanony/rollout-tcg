@@ -12,7 +12,7 @@ export const TYPE_GLOW: Record<string, string> = {
   Colorless:  '203 213 225',
 }
 
-const FALLBACK = '139 92 246'
+const FALLBACK = '100 116 139'
 
 export function primaryGlow(types?: string[]): string {
   if (!types?.length) return FALLBACK

@@ -2,7 +2,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useGlimm } from 'glimm/react'
 import { useAuth } from '../auth/useAuth'
 import NotificationBell from './NotificationBell'
-import GlassSurface from './GlassSurface'
 
 function Logo() {
   const { sweep } = useGlimm()
@@ -28,7 +27,7 @@ function NavLink({ to, label }: { to: string; label: string }) {
       onClick={() => sweep(() => navigate(to))}
       className={`rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors sm:px-3
         ${active
-          ? 'bg-violet-500/20 text-violet-300'
+          ? 'bg-blue-500/20 text-blue-300'
           : 'text-slate-400 hover:bg-white/10 hover:text-slate-100'}`}
     >
       {label}
@@ -41,15 +40,7 @@ export default function Navbar() {
 
   return (
     <div className="fixed left-0 right-0 top-0 z-50 px-4 pt-3">
-      <GlassSurface
-        width="100%"
-        height={56}
-        borderRadius={16}
-        blur={14}
-        brightness={18}
-        opacity={0.92}
-        distortionScale={-160}
-      >
+      <div className="rounded-2xl border border-white/[0.06] bg-slate-900/85 backdrop-blur-xl shadow-xl">
         <div className="flex h-14 w-full items-center gap-1 px-4 sm:gap-3">
           <Logo />
 
@@ -74,14 +65,14 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={login}
-                className="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-violet-500"
+                className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-blue-500"
               >
                 Sign in
               </button>
             )}
           </div>
         </div>
-      </GlassSurface>
+      </div>
     </div>
   )
 }

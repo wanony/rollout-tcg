@@ -15,7 +15,7 @@ export default function SortDropdown({ filters, totalCount, onChange }: SortDrop
       <select
         value={filters.sort ?? 'newest'}
         onChange={e => onChange({ ...filters, sort: e.target.value as CardFilters['sort'] })}
-        className="rounded-lg border border-slate-700/60 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
+        className="rounded-lg border border-slate-700/60 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
       >
         <option value="newest">Newest</option>
         <option value="price-desc">Price: High → Low</option>

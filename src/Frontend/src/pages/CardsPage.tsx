@@ -11,7 +11,7 @@ import AutocompleteDropdown, { AutocompleteDropdownHandle } from '../components/
 import { PageCommandsContext } from '../components/CommandPalette'
 
 function TypeBadge({ type }: { type: string }) {
-  const rgb = TYPE_GLOW[type] ?? '139 92 246'
+  const rgb = TYPE_GLOW[type] ?? '100 116 139'
   return (
     <span
       className="inline-flex rounded-full px-1.5 py-0.5 text-[9px] font-medium leading-none"
@@ -142,7 +142,7 @@ export default function CardsPage() {
               if (e.key === 'Enter') { setFilters(f => ({ ...f, name: nameInput || undefined })); setShowSuggestions(false) }
             }}
             placeholder="Search Pokémon cards…"
-            className="w-full rounded-lg border border-slate-700/60 bg-slate-900/80 px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 backdrop-blur-sm focus:border-violet-500 focus:outline-none"
+            className="w-full rounded-lg border border-slate-700/60 bg-slate-900/80 px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 backdrop-blur-sm focus:border-blue-500 focus:outline-none"
           />
           {showSuggestions && (
             <AutocompleteDropdown
@@ -155,7 +155,7 @@ export default function CardsPage() {
         </div>
         <button
           onClick={() => { setFilters(f => ({ ...f, name: nameInput || undefined })); setShowSuggestions(false) }}
-          className="rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-500 active:scale-95"
+          className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500 active:scale-95"
         >
           Search
         </button>
@@ -182,7 +182,7 @@ export default function CardsPage() {
           {(filters.type || filters.rarity || filters.setId || filters.name) && (
             <button
               onClick={() => { setFilters({ sort: filters.sort }); setNameInput('') }}
-              className="text-violet-400 hover:text-violet-300 underline"
+              className="text-blue-400 hover:text-blue-300 underline"
             >
               Clear filters
             </button>
