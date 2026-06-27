@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
-import { createChart, ColorType, AreaSeries } from 'lightweight-charts'
+import { createChart, ColorType } from 'lightweight-charts'
 import GlassSurface from './GlassSurface'
 import BorderGlow from './BorderGlow'
 import { primaryGlow, TYPE_GLOW } from '../lib/typeColors'
@@ -53,7 +53,7 @@ function PriceSparkline({ glowColor }: { glowColor: string }) {
     })
 
     // ponytail: no backend sparkline data (pokemontcg IDs aren't GUIDs); mock until card-ID mapping is added
-    const series = chart.addSeries(AreaSeries, {
+    const series = chart.addAreaSeries({
       lineColor: `rgb(${glowColor})`,
       topColor: `rgb(${glowColor} / 0.3)`,
       bottomColor: `rgb(${glowColor} / 0.0)`,
@@ -63,10 +63,10 @@ function PriceSparkline({ glowColor }: { glowColor: string }) {
     const today = Math.floor(Date.now() / 1000)
     const DAY = 86400
     const mockData = Array.from({ length: 30 }, (_, i) => ({
-      time: (today - (29 - i) * DAY) as unknown as number,
+      time: today - (29 - i) * DAY,
       value: 5 + Math.sin(i * 0.4) * 2 + Math.random() * 0.5,
     }))
-    series.setData(mockData as Parameters<typeof series.setData>[0])
+    series.setData(mockData as any)
     chart.timeScale().fitContent()
 
     const obs = new ResizeObserver(() => {

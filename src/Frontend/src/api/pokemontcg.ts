@@ -135,10 +135,12 @@ export async function searchPokemonCards(
   pageSize = 20,
 ): Promise<PokemonCardPage> {
   const params = new URLSearchParams()
-  // Default to 'Pikachu' when no filters set so the initial view shows real cards
-  params.set('name', filters.name || 'Pikachu')
+  const hasFilter = !!(filters.name || filters.type || filters.rarity || filters.setId)
+  if (filters.name)   params.set('name', filters.name)
   if (filters.type)   params.set('types', filters.type)
   if (filters.rarity) params.set('rarity', filters.rarity)
+  if (filters.setId)  params.set('set', filters.setId)
+  if (!hasFilter)     params.set('name', 'Pikachu')
 
   const all = (await fetchFiltered(params)).filter(c => c.image)
 
