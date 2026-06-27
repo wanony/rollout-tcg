@@ -140,7 +140,7 @@ export async function searchPokemonCards(
   if (filters.type)   params.set('types', filters.type)
   if (filters.rarity) params.set('rarity', filters.rarity)
 
-  const all = await fetchFiltered(params)
+  const all = (await fetchFiltered(params)).filter(c => c.image)
 
   // Client-side sort
   if (filters.sort === 'name') all.sort((a, b) => a.name.localeCompare(b.name))
