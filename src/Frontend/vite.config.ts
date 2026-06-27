@@ -8,8 +8,8 @@ function idProxy() {
   return {
     target: 'http://localhost:5001',
     changeOrigin: true,
-    configure: (proxy) => {
-      proxy.on('proxyReq', (proxyReq, req) => {
+    configure: (proxy: any) => {
+      proxy.on('proxyReq', (proxyReq: any, req: any) => {
         proxyReq.setHeader('x-forwarded-proto', 'https')
         proxyReq.setHeader('x-forwarded-host', req.headers.host ?? 'localhost:3000')
       })
