@@ -1,4 +1,6 @@
 const BASE = 'https://api.pokemontcg.io/v2'
+const PTCG_KEY = import.meta.env.VITE_PTCG_API_KEY as string | undefined
+const headers = PTCG_KEY ? { 'X-Api-Key': PTCG_KEY } : {}
 
 interface PriceTier {
   low: number
@@ -73,13 +75,13 @@ export async function searchPokemonCards(
   })
   if (parts.length) params.set('q', parts.join(' '))
 
-  const res = await fetch(`${BASE}/cards?${params}`)
+  const res = await fetch(`${BASE}/cards?${params}`, { headers })
   if (!res.ok) throw new Error(`Pokemon TCG API error: ${res.status}`)
   return res.json()
 }
 
 export async function fetchSets(): Promise<PokemonSet[]> {
-  const res = await fetch(`${BASE}/sets?orderBy=-releaseDate&pageSize=250`)
+  const res = await fetch(`${BASE}/sets?orderBy=-releaseDate&pageSize=250`, { headers })
   if (!res.ok) throw new Error(`Pokemon TCG API error: ${res.status}`)
   const data = await res.json()
   return data.data
@@ -89,7 +91,7 @@ export async function fetchAutocompleteSuggestions(name: string): Promise<string
   if (name.length < 2) return []
   const params = new URLSearchParams({ q: `name:${name}*`, pageSize: '6', select: 'name' })
   try {
-    const res = await fetch(`${BASE}/cards?${params}`)
+    const res = await fetch(`${BASE}/cards?${params}`, { headers })
     if (!res.ok) return []
     const data: PokemonCardPage = await res.json()
     return [...new Set(data.data.map(c => c.name))].slice(0, 5)
