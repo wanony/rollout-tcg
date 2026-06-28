@@ -131,7 +131,7 @@ export default function CardsPage() {
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-bold text-slate-100 sm:text-2xl">Card Catalog</h1>
+      <h1 className="mb-4 text-xl font-bold text-slate-100 sm:text-2xl">Card Catalogue</h1>
 
       {/* Search + autocomplete */}
       <div className="relative mb-3 flex gap-2">
