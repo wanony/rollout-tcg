@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import * as signalR from '@microsoft/signalr'
-import { Notification } from '../types/api'
 
 export function useSignalR(userId: string | undefined) {
-  const [liveNotifications, setLiveNotifications] = useState<Notification[]>([])
+  const qc = useQueryClient()
 
   useEffect(() => {
     if (!userId) return
@@ -13,14 +13,12 @@ export function useSignalR(userId: string | undefined) {
       .withAutomaticReconnect()
       .build()
 
-    connection.on('notification', (notification: Notification) => {
-      setLiveNotifications(prev => [notification, ...prev])
+    connection.on('notification', () => {
+      qc.invalidateQueries({ queryKey: ['notifications', userId] })
     })
 
     connection.start().catch(err => console.warn('SignalR connect error:', err))
 
     return () => { connection.stop() }
-  }, [userId])
-
-  return { liveNotifications }
+  }, [userId, qc])
 }

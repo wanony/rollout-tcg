@@ -78,7 +78,7 @@ function PriceSparkline({ glowColor, cardmarket }: { glowColor: string; cardmark
 
 export default function CardDetailModal({ card: cardProp, onClose }: CardDetailModalProps) {
   const { user } = useAuth()
-  const [addState, setAddState] = useState<'idle' | 'loading' | 'done'>('idle')
+  const [addState, setAddState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
 
   // Enrich with full card data (list endpoint only has name + image)
   const { data: fullCard } = useQuery({
@@ -119,7 +119,8 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
       setAddState('done')
       setTimeout(() => setAddState('idle'), 1500)
     } catch {
-      setAddState('idle')
+      setAddState('error')
+      setTimeout(() => setAddState('idle'), 2000)
     }
   }
 
@@ -278,6 +279,8 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
                     >
                       {addState === 'done'
                         ? 'Added ✓'
+                        : addState === 'error'
+                        ? 'Failed — try again'
                         : addState === 'loading'
                         ? 'Adding…'
                         : 'Add to Portfolio'}

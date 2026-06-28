@@ -1,10 +1,17 @@
 import { Link } from 'react-router-dom'
 import { MessageCircle } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { useSignalR } from '../hooks/useSignalR'
+import { getNotifications } from '../api/notifications'
 
 export default function NotificationBell({ userId }: { userId: string }) {
-  const { liveNotifications } = useSignalR(userId)
-  const unread = liveNotifications.filter(n => !n.isRead).length
+  useSignalR(userId)
+  const { data: notifications } = useQuery({
+    queryKey: ['notifications', userId],
+    queryFn: () => getNotifications(userId),
+    staleTime: 60_000,
+  })
+  const unread = notifications?.filter(n => !n.isRead).length ?? 0
 
   return (
     <Link to="/notifications" className="relative flex items-center justify-center rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-white/10 hover:text-slate-100">
