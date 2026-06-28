@@ -1,8 +1,22 @@
 import { useState, FormEvent } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../auth/useAuth'
 import { getPortfolioCards, getPortfolioSummary, addCardToPortfolio, removeCardFromPortfolio } from '../api/portfolio'
+import { PokemonCard } from '../api/pokemontcg'
+import CardDetailModal from '../components/CardDetailModal'
+import { CollectionItem } from '../types/api'
+
+function stubCard(item: CollectionItem): PokemonCard {
+  return {
+    id: item.cardId,
+    name: item.cardName,
+    rarity: 'Unknown',
+    set: { id: '', name: '', series: '' },
+    images: { small: '', large: '' },
+    supertype: 'Pokemon',
+  }
+}
 
 const CONDITIONS = ['Mint', 'NearMint', 'LightlyPlayed', 'Played', 'HeavilyPlayed']
 
@@ -11,6 +25,7 @@ export default function PortfolioPage() {
   const userId = user!.profile.sub
   const qc = useQueryClient()
   const [showForm, setShowForm] = useState(false)
+  const [selectedCard, setSelectedCard] = useState<PokemonCard | null>(null)
   const [form, setForm] = useState({ cardName: '', quantity: '1', condition: 'NearMint', acquisitionPriceUsd: '' })
 
   const { data: cards } = useQuery({ queryKey: ['portfolio', userId], queryFn: () => getPortfolioCards(userId) })
@@ -89,12 +104,13 @@ export default function PortfolioPage() {
       <div className="space-y-2">
         {cards?.map((item, i) => (
           <motion.div key={item.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
-            className="flex items-center gap-3 rounded-xl border border-slate-700/50 bg-slate-900/80 px-4 py-3 backdrop-blur-sm">
+            onClick={() => item.cardId && setSelectedCard(stubCard(item))}
+            className={`flex items-center gap-3 rounded-xl border border-slate-700/50 bg-slate-900/80 px-4 py-3 backdrop-blur-sm transition-colors ${item.cardId ? 'cursor-pointer hover:border-slate-600 hover:bg-slate-800/80' : ''}`}>
             <div className="flex-1 min-w-0">
               <div className="font-medium text-slate-100 truncate">{item.cardName}</div>
               <div className="text-xs text-slate-500">Qty {item.quantity} · {item.condition} · ${item.acquisitionPriceUsd}/ea</div>
             </div>
-            <button onClick={() => removeMutation.mutate(item.id)}
+            <button onClick={e => { e.stopPropagation(); removeMutation.mutate(item.id) }}
               className="shrink-0 rounded-lg px-2.5 py-1.5 text-xs text-slate-500 transition-colors hover:bg-red-900/30 hover:text-red-400">
               Remove
             </button>
@@ -102,6 +118,12 @@ export default function PortfolioPage() {
         ))}
         {cards?.length === 0 && <div className="mt-16 text-center text-slate-500">No cards yet.</div>}
       </div>
+
+      <AnimatePresence>
+        {selectedCard && (
+          <CardDetailModal card={selectedCard} onClose={() => setSelectedCard(null)} />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
