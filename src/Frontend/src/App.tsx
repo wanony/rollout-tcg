@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useEffect, ReactNode, useState, useMemo, useCallback } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useAuth } from './auth/useAuth'
 import { setAuthToken } from './api/client'
 import Navbar from './components/Navbar'
@@ -75,16 +76,26 @@ export default function App() {
         <DitherColorContext.Provider value={setOverride}>
         <PageCommandsContext.Provider value={setPageCommands}>
           <main className="mx-auto w-full max-w-6xl px-3 pt-20 pb-4 sm:px-6 sm:pb-6">
-            <Routes>
-              <Route path="/" element={<Navigate to="/cards" replace />} />
-              <Route path="/callback" element={<CallbackPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/cards" element={<CardsPage />} />
-              <Route path="/portfolio" element={<RequireAuth><PortfolioPage /></RequireAuth>} />
-              <Route path="/marketplace" element={<MarketplacePage />} />
-              <Route path="/marketplace/new" element={<RequireAuth><NewListingPage /></RequireAuth>} />
-              <Route path="/notifications" element={<RequireAuth><NotificationsPage /></RequireAuth>} />
-            </Routes>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18, ease: 'easeInOut' }}
+              >
+                <Routes location={location}>
+                  <Route path="/" element={<Navigate to="/cards" replace />} />
+                  <Route path="/callback" element={<CallbackPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/cards" element={<CardsPage />} />
+                  <Route path="/portfolio" element={<RequireAuth><PortfolioPage /></RequireAuth>} />
+                  <Route path="/marketplace" element={<MarketplacePage />} />
+                  <Route path="/marketplace/new" element={<RequireAuth><NewListingPage /></RequireAuth>} />
+                  <Route path="/notifications" element={<RequireAuth><NotificationsPage /></RequireAuth>} />
+                </Routes>
+              </motion.div>
+            </AnimatePresence>
           </main>
         </PageCommandsContext.Provider>
         </DitherColorContext.Provider>

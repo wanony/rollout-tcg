@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useGlimm } from 'glimm/react'
 import { useAuth } from '../auth/useAuth'
+import NotificationBell from './NotificationBell'
 
 function GithubIcon() {
   return (
@@ -9,30 +9,27 @@ function GithubIcon() {
     </svg>
   )
 }
-import NotificationBell from './NotificationBell'
 
 function Logo() {
-  const { sweep } = useGlimm()
   const navigate = useNavigate()
   return (
     <button
-      onClick={() => sweep(() => navigate('/cards'))}
+      onClick={() => navigate('/cards')}
       className="mr-2 flex items-center gap-2 sm:mr-4 text-left"
     >
-      <span className="text-xl">✦</span>
+      <img src="/favicon.ico" alt="" className="h-6 w-6" aria-hidden />
       <span className="hidden font-bold tracking-tight text-slate-100 sm:block">Rollout TCG</span>
     </button>
   )
 }
 
 function NavLink({ to, label }: { to: string; label: string }) {
-  const { sweep } = useGlimm()
   const navigate = useNavigate()
   const location = useLocation()
   const active = location.pathname.startsWith(to)
   return (
     <button
-      onClick={() => sweep(() => navigate(to))}
+      onClick={() => navigate(to)}
       className={`rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors sm:px-3
         ${active
           ? 'bg-blue-500/20 text-blue-300'

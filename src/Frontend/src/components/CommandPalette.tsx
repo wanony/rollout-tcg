@@ -2,7 +2,6 @@ import { createContext, Dispatch, SetStateAction, useEffect, useRef } from 'reac
 import { createPortal } from 'react-dom'
 import { Command } from 'cmdk'
 import { useNavigate } from 'react-router-dom'
-import { useGlimm } from 'glimm/react'
 
 export interface PaletteCommand {
   id: string
@@ -21,7 +20,6 @@ interface CommandPaletteProps {
 }
 
 export default function CommandPalette({ open, onClose, pageCommands = [] }: CommandPaletteProps) {
-  const { sweep } = useGlimm()
   const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -44,9 +42,9 @@ export default function CommandPalette({ open, onClose, pageCommands = [] }: Com
   if (!open) return null
 
   const navCommands: PaletteCommand[] = [
-    { id: 'nav-cards',       label: 'Go to Cards',       group: 'Navigate', action: () => { sweep(() => navigate('/cards'));       onClose() } },
-    { id: 'nav-portfolio',   label: 'Go to Portfolio',   group: 'Navigate', action: () => { sweep(() => navigate('/portfolio'));   onClose() } },
-    { id: 'nav-marketplace', label: 'Go to Marketplace', group: 'Navigate', action: () => { sweep(() => navigate('/marketplace')); onClose() } },
+    { id: 'nav-cards',       label: 'Go to Cards',       group: 'Navigate', action: () => { navigate('/cards');       onClose() } },
+    { id: 'nav-portfolio',   label: 'Go to Portfolio',   group: 'Navigate', action: () => { navigate('/portfolio');   onClose() } },
+    { id: 'nav-marketplace', label: 'Go to Marketplace', group: 'Navigate', action: () => { navigate('/marketplace'); onClose() } },
   ]
 
   const allGroups = [
