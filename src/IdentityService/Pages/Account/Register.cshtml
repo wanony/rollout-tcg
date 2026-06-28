@@ -1,0 +1,35 @@
+@page
+@model RegisterModel
+@{ ViewData["Title"] = "Create account"; }
+
+<h1>Create account</h1>
+
+@if (Model.ErrorMessage != null)
+{
+  <div class="error">@Model.ErrorMessage</div>
+}
+
+<form method="post">
+  <input type="hidden" asp-for="ReturnUrl" />
+
+  <div class="field">
+    <label asp-for="UserName">Username</label>
+    <input asp-for="UserName" type="text" autocomplete="username" autofocus />
+  </div>
+
+  <div class="field">
+    <label asp-for="Email">Email</label>
+    <input asp-for="Email" type="email" autocomplete="email" />
+  </div>
+
+  <div class="field">
+    <label asp-for="Password">Password</label>
+    <input asp-for="Password" type="password" autocomplete="new-password" />
+  </div>
+
+  <button type="submit" class="btn" style="margin-bottom:0.75rem">Create account</button>
+</form>
+
+<div class="footer-link">
+  Already have an account? <a asp-page="/Account/Login" asp-route-returnUrl="@Model.ReturnUrl">Sign in</a>
+</div>

@@ -5,7 +5,7 @@ namespace TCGTrading.Portfolio.Domain.Entities;
 public class CollectionItem : AggregateRoot
 {
     public Guid UserId { get; private init; }
-    public Guid CardId { get; private init; }
+    public string CardId { get; private init; } = string.Empty;
     public string CardName { get; private init; } = string.Empty;
     public int Quantity { get; private init; }
     // ponytail: string condition; use CardPhysicalCondition from SharedKernel when validation needed
@@ -15,7 +15,7 @@ public class CollectionItem : AggregateRoot
     private CollectionItem() { } // EF Core
 
     public static CollectionItem Create(
-        Guid userId, Guid cardId, string cardName,
+        Guid userId, string cardId, string cardName,
         int quantity, string condition, decimal acquisitionPriceUsd)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);

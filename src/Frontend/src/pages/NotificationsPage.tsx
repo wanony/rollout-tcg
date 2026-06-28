@@ -18,15 +18,15 @@ export default function NotificationsPage() {
         {notifications?.map((n, i) => (
           <motion.div key={n.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
             className={`flex items-start gap-3 rounded-xl border px-4 py-3 backdrop-blur-sm transition-colors
-              ${!n.isRead ? 'border-violet-500/50 bg-violet-950/40' : 'border-slate-700/50 bg-slate-900/80'}`}>
+              ${!n.isRead ? 'border-blue-500/50 bg-blue-950/40' : 'border-slate-700/50 bg-slate-900/80'}`}>
             <div className="flex-1 min-w-0">
-              <div className={`font-medium text-sm ${!n.isRead ? 'text-violet-200' : 'text-slate-300'}`}>{n.title}</div>
+              <div className={`font-medium text-sm ${!n.isRead ? 'text-blue-200' : 'text-slate-300'}`}>{n.title}</div>
               <div className="text-xs text-slate-500 mt-0.5">{n.message}</div>
               <div className="text-xs text-slate-600 mt-1">{new Date(n.createdAt).toLocaleString()}</div>
             </div>
             {!n.isRead && (
               <button onClick={() => markRead.mutate(n.id)}
-                className="shrink-0 rounded-lg px-2.5 py-1.5 text-xs text-violet-400 transition-colors hover:bg-violet-900/40 hover:text-violet-200">
+                className="shrink-0 rounded-lg px-2.5 py-1.5 text-xs text-blue-400 transition-colors hover:bg-blue-900/40 hover:text-blue-200">
                 Read
               </button>
             )}

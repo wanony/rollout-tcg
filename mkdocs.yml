@@ -1,0 +1,108 @@
+site_name: Rollout TCG
+docs_dir: site-docs
+site_description: Technical documentation for the Rollout TCG trading platform — microservices, holographic frontend, full observability.
+site_url: https://wanony.github.io/rollout-tcg/
+repo_url: https://github.com/wanony/rollout-tcg
+repo_name: wanony/rollout-tcg
+edit_uri: edit/main/site-docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Quick Start: getting-started/quick-start.md
+    - Local Development: getting-started/development.md
+    - Demo Account: getting-started/demo.md
+  - Architecture:
+    - Overview: architecture/overview.md
+    - Event Flow: architecture/event-flow.md
+    - Data Stores: architecture/data-stores.md
+    - Auth & Security: architecture/auth.md
+    - Shared Kernel: architecture/shared-kernel.md
+  - Services:
+    - Identity Service: services/identity.md
+    - Portfolio Service: services/portfolio.md
+    - Marketplace Service: services/marketplace.md
+    - Notification Service: services/notification.md
+    - Card Catalog: services/card-catalog.md
+    - Pricing Service: services/pricing.md
+    - API Gateway: services/api-gateway.md
+  - Frontend:
+    - Overview: frontend/overview.md
+    - Authentication: frontend/auth.md
+    - Card Rendering: frontend/card-rendering.md
+    - Real-time Notifications: frontend/real-time.md
+    - Search & Filtering: frontend/search.md
+  - Infrastructure:
+    - Docker Compose: infrastructure/docker-compose.md
+    - Observability: infrastructure/observability.md
+    - CI / CD: infrastructure/ci-cd.md
+  - Roadmap: roadmap.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/wanony/rollout-tcg

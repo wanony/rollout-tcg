@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Metrics;
@@ -49,7 +50,16 @@ builder.Services.AddIdentityServer(options =>
 .AddInMemoryClients(clients)
 .AddAspNetIdentity<ApplicationUser>();
 
+builder.Services.AddRazorPages();
 builder.Services.AddAuthorization();
+
+// Trust X-Forwarded-Proto/Host from the Vite dev proxy (dev only)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 var app = builder.Build();
 
@@ -62,9 +72,11 @@ using (var scope = app.Services.CreateScope())
     await db.Database.MigrateAsync();
 }
 
+app.UseForwardedHeaders();
 app.UseIdentityServer();
 app.UseAuthorization();
 
+app.MapRazorPages();
 app.MapAccountEndpoints();
 
 app.Run();

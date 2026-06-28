@@ -26,7 +26,7 @@ export default function MarketplacePage() {
         {user && (
           <Link
             to="/marketplace/new"
-            className="rounded-lg bg-violet-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-violet-500 active:scale-95"
+            className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-500 active:scale-95"
           >
             + List Card
           </Link>
@@ -59,7 +59,7 @@ export default function MarketplacePage() {
               <button
                 onClick={() => purchase.mutate({ id: listing.id, buyerId: user.profile.sub })}
                 disabled={purchase.isPending}
-                className="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-violet-500 disabled:opacity-50 active:scale-95 whitespace-nowrap"
+                className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-50 active:scale-95 whitespace-nowrap"
               >
                 Buy
               </button>
