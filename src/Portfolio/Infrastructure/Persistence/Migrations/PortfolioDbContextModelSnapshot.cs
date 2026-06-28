@@ -17,7 +17,7 @@ namespace TCGTrading.Portfolio.Api.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -32,8 +32,9 @@ namespace TCGTrading.Portfolio.Api.Infrastructure.Persistence.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
-                    b.Property<Guid>("CardId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("CardId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("CardName")
                         .IsRequired()

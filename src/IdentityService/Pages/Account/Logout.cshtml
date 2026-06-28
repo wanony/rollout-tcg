@@ -1,0 +1,11 @@
+@page
+@model LogoutModel
+@{ ViewData["Title"] = "Signed out"; }
+
+<h1>Signed out</h1>
+<p style="text-align:center; color:#94a3b8; margin-bottom:1.5rem">You have been signed out successfully.</p>
+
+@if (Model.PostLogoutRedirectUri != null)
+{
+  <a href="@Model.PostLogoutRedirectUri" class="btn">Return to app</a>
+}

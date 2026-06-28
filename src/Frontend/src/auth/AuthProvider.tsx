@@ -44,7 +44,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider value={{
       user,
       isLoading,
-      login: () => manager.signinRedirect(),
+      login: () => manager.signinRedirect().catch(err => {
+        console.error('[auth] signinRedirect failed:', err)
+        alert(`Sign-in failed: ${err?.message ?? err}`)
+      }),
       logout: () => manager.signoutRedirect(),
       userManager: manager,
     }}>
