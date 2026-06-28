@@ -138,7 +138,7 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
-        className="relative z-10 w-full max-w-3xl max-h-[90dvh] overflow-y-auto rounded-3xl"
+        className="relative z-10 w-full max-w-3xl max-h-[90dvh] overflow-y-auto overflow-x-hidden rounded-3xl modal-scroll"
       >
         <div className="rounded-3xl border border-white/[0.08] bg-slate-900/95 backdrop-blur-xl shadow-2xl">
           <div className="flex w-full flex-col gap-6 p-6 sm:flex-row">
