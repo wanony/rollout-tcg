@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import BorderGlow from './BorderGlow'
-import { primaryGlow, TYPE_GLOW } from '../lib/typeColors'
+import { primaryGlow, TYPE_GLOW, typeGradientColors } from '../lib/typeColors'
 import { PokemonCard, CardmarketPricing, fetchCardById } from '../api/pokemontcg'
 import { addCardToPortfolio } from '../api/portfolio'
 import { useAuth } from '../auth/useAuth'
@@ -266,10 +266,10 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
               {user && (
                 <div className="mt-auto pt-2">
                   <BorderGlow
-                    glowColor="59 130 246"
+                    glowColor={glowColor}
                     backgroundColor="transparent"
                     borderRadius={12}
-                    colors={['#60a5fa', '#38bdf8', '#38bdf8']}
+                    colors={typeGradientColors(card.types)}
                     className="w-full"
                   >
                     <button

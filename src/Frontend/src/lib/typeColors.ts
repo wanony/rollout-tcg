@@ -18,3 +18,10 @@ export function primaryGlow(types?: string[]): string {
   if (!types?.length) return FALLBACK
   return TYPE_GLOW[types[0]] ?? FALLBACK
 }
+
+export function typeGradientColors(types?: string[]): string[] {
+  const rgbs = (types ?? []).slice(0, 2).map(t => TYPE_GLOW[t] ?? FALLBACK)
+  if (!rgbs.length) rgbs.push(FALLBACK)
+  const a = `rgb(${rgbs[0]})`, b = `rgb(${rgbs[rgbs.length - 1]})`
+  return [a, b, a]
+}
