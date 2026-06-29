@@ -270,6 +270,7 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
                     backgroundColor="transparent"
                     borderRadius={12}
                     colors={typeGradientColors(card.types)}
+                    fillOpacity={0}
                     className="w-full"
                   >
                     <button
