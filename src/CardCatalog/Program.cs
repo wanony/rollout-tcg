@@ -36,7 +36,9 @@ using (var scope = app.Services.CreateScope())
     var existing = await repo.GetAllAsync();
     if (existing.Count == 0)
     {
-        var fetched = await CardSeed.FetchAsync();
+        var fetched = app.Configuration.GetValue<bool>("CardSeed:UseFixedData")
+            ? CardSeed.Cards
+            : await CardSeed.FetchAsync();
         foreach (var card in fetched)
             await repo.AddAsync(card);
         existing = await repo.GetAllAsync();

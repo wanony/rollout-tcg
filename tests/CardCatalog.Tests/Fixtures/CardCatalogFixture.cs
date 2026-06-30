@@ -47,6 +47,7 @@ public class CardCatalogFixture : WebApplicationFactory<Program>, IAsyncLifetime
                 ["ConnectionStrings:CardDb"] = _postgres.GetConnectionString(),
                 ["MeiliSearch:Host"] = $"http://localhost:{_meilisearch.GetMappedPublicPort(7700)}",
                 ["MeiliSearch:ApiKey"] = "masterKey",
+                ["CardSeed:UseFixedData"] = "true",
             });
         });
     }
