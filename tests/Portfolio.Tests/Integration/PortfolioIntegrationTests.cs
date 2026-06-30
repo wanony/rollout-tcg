@@ -9,7 +9,7 @@ public class PortfolioIntegrationTests(PortfolioFixture fixture)
     : IClassFixture<PortfolioFixture>
 {
     private static readonly Guid UserId = Guid.NewGuid();
-    private static readonly Guid CardId = new("a1000000-0000-0000-0000-000000000001");
+    private static readonly string CardId = "a1000000-0000-0000-0000-000000000001";
 
     private AddCardRequest SampleRequest() => new(
         UserId, CardId, "Dragon Fire", 1, "NearMint", 10.50m);
