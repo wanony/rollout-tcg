@@ -7,6 +7,7 @@ namespace TCGTrading.Marketplace.Infrastructure.Persistence;
 public class MarketplaceDbContext(DbContextOptions<MarketplaceDbContext> options) : DbContext(options)
 {
     public DbSet<Listing> Listings => Set<Listing>();
+    public DbSet<Offer> Offers => Set<Offer>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -16,6 +17,15 @@ public class MarketplaceDbContext(DbContextOptions<MarketplaceDbContext> options
             e.Property(x => x.CardName).HasMaxLength(200).IsRequired();
             e.Property(x => x.Condition).HasMaxLength(50).IsRequired();
             e.Property(x => x.AskingPriceUsd).HasPrecision(18, 2);
+            e.Property(x => x.Status)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+        });
+
+        modelBuilder.Entity<Offer>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.OfferedPriceUsd).HasPrecision(18, 2);
             e.Property(x => x.Status)
                 .HasConversion<string>()
                 .HasMaxLength(20);

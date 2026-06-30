@@ -11,6 +11,7 @@ public static class PersistenceExtensions
         builder.Services.AddDbContext<MarketplaceDbContext>(opts =>
             opts.UseNpgsql(builder.Configuration.GetConnectionString("MarketplaceDb")));
         builder.Services.AddScoped<IListingRepository, ListingRepository>();
+        builder.Services.AddScoped<IOfferRepository, OfferRepository>();
         return builder;
     }
 }
