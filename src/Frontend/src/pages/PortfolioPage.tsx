@@ -1,22 +1,11 @@
 import { useState, useEffect, useRef, FormEvent } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../auth/useAuth'
 import { getPortfolioCards, getPortfolioSummary, addCardToPortfolio, removeCardFromPortfolio } from '../api/portfolio'
-import { PokemonCard, searchPokemonCards } from '../api/pokemontcg'
+import { PokemonCard, searchPokemonCards, fetchCardById } from '../api/pokemontcg'
+import CardTile from '../components/CardTile'
 import CardDetailModal from '../components/CardDetailModal'
-import { CollectionItem } from '../types/api'
-
-function stubCard(item: CollectionItem): PokemonCard {
-  return {
-    id: item.cardId,
-    name: item.cardName,
-    rarity: 'Unknown',
-    set: { id: '', name: '', series: '' },
-    images: { small: '', large: '' },
-    supertype: 'Pokemon',
-  }
-}
 
 const CONDITIONS = ['Mint', 'NearMint', 'LightlyPlayed', 'Played', 'HeavilyPlayed']
 
@@ -96,6 +85,17 @@ export default function PortfolioPage() {
 
   const { data: cards } = useQuery({ queryKey: ['portfolio', userId], queryFn: () => getPortfolioCards(userId) })
   const { data: summary } = useQuery({ queryKey: ['portfolio-summary', userId], queryFn: () => getPortfolioSummary(userId) })
+
+  // Portfolio only stores cardId/cardName — enrich each item with real TCGdex art/rarity/types,
+  // same lookup CardDetailModal already does, so the cache is shared and the modal opens instantly.
+  const cardQueries = useQueries({
+    queries: (cards ?? []).map(item => ({
+      queryKey: ['card', item.cardId],
+      queryFn: () => fetchCardById(item.cardId),
+      enabled: !!item.cardId,
+      staleTime: 24 * 60 * 60 * 1000,
+    })),
+  })
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ['portfolio', userId] })
@@ -187,24 +187,38 @@ export default function PortfolioPage() {
         </motion.form>
       )}
 
-      {/* Card list */}
-      <div className="space-y-2">
-        {cards?.map((item, i) => (
-          <motion.div key={item.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
-            onClick={() => item.cardId && setSelectedCard(stubCard(item))}
-            className={`flex items-center gap-3 rounded-xl border border-slate-700/50 bg-slate-900/80 px-4 py-3 backdrop-blur-sm transition-colors ${item.cardId ? 'cursor-pointer hover:border-slate-600 hover:bg-slate-800/80' : ''}`}>
-            <div className="flex-1 min-w-0">
-              <div className="font-medium text-slate-100 truncate">{item.cardName}</div>
-              <div className="text-xs text-slate-500">Qty {item.quantity} · {item.condition} · ${item.acquisitionPriceUsd}/ea</div>
+      {/* Card grid — same tile as /cards, enriched with real TCGdex art */}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {cards?.map((item, i) => {
+          const cardData = cardQueries[i]?.data
+          if (!cardData) {
+            return (
+              <div key={item.id} className="animate-pulse rounded-[4.5%/3.5%] bg-slate-800/60" style={{ aspectRatio: '5/7' }} />
+            )
+          }
+          return (
+            <div key={item.id} className="group relative">
+              <CardTile
+                card={cardData}
+                index={i}
+                onClick={() => setSelectedCard(cardData)}
+                footer={
+                  <div className="mt-0.5 truncate text-[10px] text-slate-300 opacity-80">
+                    Qty {item.quantity} · {item.condition}
+                  </div>
+                }
+              />
+              <button
+                onClick={e => { e.stopPropagation(); removeMutation.mutate(item.id) }}
+                className="absolute right-1.5 top-1.5 rounded-full bg-black/60 px-1.5 py-0.5 text-[10px] text-slate-300 opacity-0 transition-opacity hover:bg-red-900/70 hover:text-red-200 group-hover:opacity-100"
+              >
+                ✕
+              </button>
             </div>
-            <button onClick={e => { e.stopPropagation(); removeMutation.mutate(item.id) }}
-              className="shrink-0 rounded-lg px-2.5 py-1.5 text-xs text-slate-500 transition-colors hover:bg-red-900/30 hover:text-red-400">
-              Remove
-            </button>
-          </motion.div>
-        ))}
-        {cards?.length === 0 && <div className="mt-16 text-center text-slate-500">No cards yet.</div>}
+          )
+        })}
       </div>
+      {cards?.length === 0 && <div className="mt-16 text-center text-slate-500">No cards yet.</div>}
 
       <AnimatePresence>
         {selectedCard && (

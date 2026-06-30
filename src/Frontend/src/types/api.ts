@@ -28,6 +28,16 @@ export interface Listing {
   createdAt: string
 }
 
+export interface Offer {
+  id: string
+  listingId: string
+  buyerId: string
+  offeredPriceUsd: number
+  status: 'Pending' | 'Accepted' | 'Rejected'
+  createdAt: string
+  respondedAt?: string
+}
+
 export interface CardSearchResult {
   id: string
   name: string

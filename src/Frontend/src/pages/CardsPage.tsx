@@ -1,31 +1,15 @@
 import { useState, useEffect, useRef, useContext, useCallback } from 'react'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { searchPokemonCards, fetchSets, CardFilters, PokemonCard } from '../api/pokemontcg'
 import { TYPE_GLOW } from '../lib/typeColors'
-import HoloCard from '../components/HoloCard'
+import CardTile from '../components/CardTile'
 import CardDetailModal from '../components/CardDetailModal'
 import FilterChips from '../components/FilterChips'
 import SortDropdown from '../components/SortDropdown'
 import AutocompleteDropdown, { AutocompleteDropdownHandle } from '../components/AutocompleteDropdown'
 import { PageCommandsContext } from '../components/CommandPalette'
 import { useDitherOverride, typeGlowToDither } from '../components/DitherColorContext'
-
-function TypeBadge({ type }: { type: string }) {
-  const rgb = TYPE_GLOW[type] ?? '100 116 139'
-  return (
-    <span
-      className="inline-flex rounded-full px-1.5 py-0.5 text-[9px] font-medium leading-none"
-      style={{
-        background: `rgb(${rgb} / 0.2)`,
-        border: `1px solid rgb(${rgb} / 0.35)`,
-        color: `rgb(${rgb})`,
-      }}
-    >
-      {type}
-    </span>
-  )
-}
 
 function marketPrice(card: PokemonCard): string | null {
   const p = card.tcgplayer?.prices
@@ -200,46 +184,15 @@ export default function CardsPage() {
 
       {cards.length > 0 && (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          {cards.map((card, i) => {
-            const price = marketPrice(card)
-            return (
-              <motion.div
-                key={card.id}
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: Math.min((i % 20) * 0.04, 0.5), duration: 0.25 }}
-                style={{ aspectRatio: '5/7' }}
-                onClick={() => setSelectedCard(card)}
-                className="cursor-pointer"
-              >
-                <HoloCard rarity={card.rarity} types={card.types} className="h-full w-full">
-                  <div className="relative h-full w-full overflow-hidden rounded-[4.5%/3.5%]">
-                    <img
-                      src={card.images.small}
-                      alt={card.name}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                      draggable={false}
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-2 pb-1.5 pt-4">
-                      <div className="truncate text-xs font-semibold text-white">{card.name}</div>
-                      <div className="flex items-center justify-between gap-1">
-                        <div className="truncate text-[10px] text-slate-300 opacity-80">{card.set.name}</div>
-                        {price && (
-                          <span className="flex-shrink-0 text-[10px] font-semibold text-emerald-400">{price}</span>
-                        )}
-                      </div>
-                      {card.types && card.types.length > 0 && (
-                        <div className="mt-0.5 flex flex-wrap gap-0.5">
-                          {card.types.map(t => <TypeBadge key={t} type={t} />)}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </HoloCard>
-              </motion.div>
-            )
-          })}
+          {cards.map((card, i) => (
+            <CardTile
+              key={card.id}
+              card={card}
+              index={i}
+              price={marketPrice(card)}
+              onClick={() => setSelectedCard(card)}
+            />
+          ))}
         </div>
       )}
 
