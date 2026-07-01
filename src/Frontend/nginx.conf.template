@@ -16,8 +16,10 @@ server {
     location ~ ^/(\.well-known|connect|Account|grants)(/|$) {
         proxy_pass http://identity-service:5001;
         proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Proto https;
-        proxy_set_header X-Forwarded-Host $host;
+        # FORWARDED_PROTO defaults to https (matches the TLS-terminating proxy in front of
+        # this container in production); override to http for plain docker-compose dev.
+        proxy_set_header X-Forwarded-Proto ${FORWARDED_PROTO};
+        proxy_set_header X-Forwarded-Host $http_host;
     }
 
     location / {

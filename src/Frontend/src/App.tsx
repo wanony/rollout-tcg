@@ -90,7 +90,7 @@ export default function App() {
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/cards" element={<CardsPage />} />
                   <Route path="/portfolio" element={<RequireAuth><PortfolioPage /></RequireAuth>} />
-                  <Route path="/marketplace" element={<MarketplacePage />} />
+                  <Route path="/marketplace" element={<RequireAuth><MarketplacePage /></RequireAuth>} />
                   <Route path="/marketplace/new" element={<RequireAuth><NewListingPage /></RequireAuth>} />
                   <Route path="/notifications" element={<RequireAuth><NotificationsPage /></RequireAuth>} />
                 </Routes>

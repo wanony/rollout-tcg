@@ -26,9 +26,9 @@ public static class Config
             AllowedGrantTypes = GrantTypes.Code,
             RequirePkce = true,
             RequireClientSecret = false,
-            RedirectUris = { "http://localhost:3000/callback", "http://localhost/callback", "https://rollout.wanony.dev/callback" },
-            PostLogoutRedirectUris = { "http://localhost:3000", "http://localhost", "https://rollout.wanony.dev" },
-            AllowedCorsOrigins = { "http://localhost:3000", "http://localhost", "https://rollout.wanony.dev" },
+            RedirectUris = { "http://localhost:3000/callback", "http://localhost/callback", "http://localhost:8080/callback", "https://rollout.wanony.dev/callback" },
+            PostLogoutRedirectUris = { "http://localhost:3000", "http://localhost", "http://localhost:8080", "https://rollout.wanony.dev" },
+            AllowedCorsOrigins = { "http://localhost:3000", "http://localhost", "http://localhost:8080", "https://rollout.wanony.dev" },
             AllowedScopes = { "openid", "profile", "email", "tcg.full" },
             AllowOfflineAccess = true
         },

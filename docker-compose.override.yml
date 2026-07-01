@@ -6,3 +6,8 @@ services:
   rabbitmq:
     environment:
       RABBITMQ_DEFAULT_PASS: dev
+  frontend:
+    environment:
+      # No TLS termination in front of the frontend container locally — tell the
+      # Identity Service the real scheme so it computes the right OIDC issuer.
+      FORWARDED_PROTO: http
