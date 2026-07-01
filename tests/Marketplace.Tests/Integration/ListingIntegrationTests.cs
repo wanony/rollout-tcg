@@ -9,7 +9,7 @@ public class ListingIntegrationTests(MarketplaceFixture fixture)
     : IClassFixture<MarketplaceFixture>
 {
     private static readonly Guid SellerId = Guid.NewGuid();
-    private static readonly Guid CardId = new("a1000000-0000-0000-0000-000000000001");
+    private const string CardId = "basep-1";
 
     private CreateListingRequest SampleListing() => new(
         SellerId, CardId, "Dragon Fire", "NearMint", 15.00m);

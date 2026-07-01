@@ -4,7 +4,7 @@ public record ListingCreatedEvent(
     Guid EventId,
     DateTime OccurredAt,
     Guid ListingId,
-    Guid CardId,
+    string CardId,
     string CardName,
     Guid SellerId,
     decimal AskingPriceUsd,

@@ -26,7 +26,7 @@ public class ListingPurchasedConsumerTests
 
         var @event = new ListingPurchasedEvent(
             Guid.NewGuid(), DateTime.UtcNow,
-            Guid.NewGuid(), Guid.NewGuid(),
+            Guid.NewGuid(), "basep-1",
             BuyerId: Guid.NewGuid(),
             SellerId: Guid.NewGuid(),
             PurchasePriceUsd: 15.00m);

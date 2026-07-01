@@ -4,7 +4,7 @@ public record ListingPurchasedEvent(
     Guid EventId,
     DateTime OccurredAt,
     Guid ListingId,
-    Guid CardId,
+    string CardId,
     Guid BuyerId,
     Guid SellerId,
     decimal PurchasePriceUsd) : IntegrationEvent(EventId, OccurredAt);

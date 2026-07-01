@@ -37,11 +37,12 @@ using (var scope = app.Services.CreateScope())
         var demoUserId = Guid.Parse(DemoSeedData.UserId);
         var otherSellerId = Guid.Parse("d0000000-0000-0000-0000-000000000002");
 
+        // Card IDs match Portfolio's demo seed (basep-1/pl4-1/basep-3) — real TCGdex IDs.
         // Demo user's own listing, to try the seller side of the offer flow (View Offers/Accept/Reject)
-        await repo.AddAsync(Listing.Create(demoUserId, Guid.NewGuid(), "Pikachu", "NearMint", 12.00m));
+        await repo.AddAsync(Listing.Create(demoUserId, "basep-1", "Pikachu", "NearMint", 12.00m));
         // Someone else's listings, to try the buyer side (Buy/Make Offer)
-        await repo.AddAsync(Listing.Create(otherSellerId, Guid.NewGuid(), "Charizard", "NearMint", 60.00m));
-        await repo.AddAsync(Listing.Create(otherSellerId, Guid.NewGuid(), "Mewtwo", "LightlyPlayed", 35.00m));
+        await repo.AddAsync(Listing.Create(otherSellerId, "pl4-1", "Charizard", "NearMint", 60.00m));
+        await repo.AddAsync(Listing.Create(otherSellerId, "basep-3", "Mewtwo", "LightlyPlayed", 35.00m));
     }
 }
 

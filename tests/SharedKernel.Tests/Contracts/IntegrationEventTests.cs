@@ -33,7 +33,7 @@ public class IntegrationEventTests
             EventId: Guid.NewGuid(),
             OccurredAt: DateTime.UtcNow,
             ListingId: Guid.NewGuid(),
-            CardId: Guid.NewGuid(),
+            CardId: "basep-1",
             BuyerId: Guid.NewGuid(),
             SellerId: Guid.NewGuid(),
             PurchasePriceUsd: 45.00m);
@@ -48,10 +48,10 @@ public class IntegrationEventTests
         {
             new CardCatalogSyncedEvent(Guid.NewGuid(), DateTime.UtcNow, "Pokemon", new[] { "xy1-1" }),
             new CardPriceUpdatedEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), "x", "Pokemon", 1m, 1m, 1m),
-            new ListingCreatedEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), Guid.NewGuid(), "Pikachu", Guid.NewGuid(), 10m, "NearMint"),
-            new ListingPurchasedEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 10m),
-            new OfferMadeEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 8m),
-            new OfferAcceptedEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 8m),
+            new ListingCreatedEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), "basep-1", "Pikachu", Guid.NewGuid(), 10m, "NearMint"),
+            new ListingPurchasedEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), "basep-1", Guid.NewGuid(), Guid.NewGuid(), 10m),
+            new OfferMadeEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), Guid.NewGuid(), "basep-1", Guid.NewGuid(), Guid.NewGuid(), 8m),
+            new OfferAcceptedEvent(Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), Guid.NewGuid(), "basep-1", Guid.NewGuid(), Guid.NewGuid(), 8m),
         };
 
         events.Should().AllBeAssignableTo<IntegrationEvent>();

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TCGTrading.Marketplace.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using TCGTrading.Marketplace.Infrastructure.Persistence;
 namespace TCGTrading.Marketplace.Api.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(MarketplaceDbContext))]
-    partial class MarketplaceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260701191225_CardIdAsString")]
+    partial class CardIdAsString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

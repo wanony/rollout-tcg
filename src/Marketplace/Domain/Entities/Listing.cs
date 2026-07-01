@@ -6,7 +6,7 @@ namespace TCGTrading.Marketplace.Domain.Entities;
 public class Listing : AggregateRoot
 {
     public Guid SellerId { get; private init; }
-    public Guid CardId { get; private init; }
+    public string CardId { get; private init; } = string.Empty;
     public string CardName { get; private init; } = string.Empty;
     // ponytail: string condition; use CardPhysicalCondition from SharedKernel when validation needed
     public string Condition { get; private init; } = string.Empty;
@@ -18,7 +18,7 @@ public class Listing : AggregateRoot
     private Listing() { } // EF Core
 
     public static Listing Create(
-        Guid sellerId, Guid cardId, string cardName,
+        Guid sellerId, string cardId, string cardName,
         string condition, decimal askingPriceUsd)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(askingPriceUsd);

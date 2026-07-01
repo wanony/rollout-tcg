@@ -5,7 +5,7 @@ public record OfferMadeEvent(
     DateTime OccurredAt,
     Guid OfferId,
     Guid ListingId,
-    Guid CardId,
+    string CardId,
     Guid BuyerId,
     Guid SellerId,
     decimal OfferedPriceUsd) : IntegrationEvent(EventId, OccurredAt);
