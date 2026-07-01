@@ -1,0 +1,10 @@
+# Production overrides. Applied explicitly alongside docker-compose.yml —
+# NOT auto-merged, unlike docker-compose.override.yml (that file is dev-only:
+# no TLS termination in front of the frontend container there).
+services:
+  frontend:
+    environment:
+      # Caddy terminates TLS in front of this box and already sends the correct
+      # X-Forwarded-Proto; this just needs to match reality so the nginx template
+      # doesn't downgrade it to http (which breaks the OIDC issuer/redirect scheme).
+      FORWARDED_PROTO: https
