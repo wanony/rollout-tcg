@@ -247,7 +247,7 @@ export default function PortfolioPage() {
       {summary && (
         <div className="mb-4 grid grid-cols-2 gap-2 rounded-xl border border-slate-700/50 bg-slate-900/80 p-3 backdrop-blur-sm sm:p-4">
           {[
-            { label: 'Cards', value: summary.totalCards },
+            { label: 'Cards', value: summary.totalItems },
             { label: 'Value', value: formatUsd(totalValue) },
           ].map(s => (
             <div key={s.label} className="text-center">
