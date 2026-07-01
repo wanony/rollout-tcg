@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,16 @@ builder.Services.AddIdentityServer(options =>
 .AddInMemoryApiScopes(Config.ApiScopes)
 .AddInMemoryClients(clients)
 .AddAspNetIdentity<ApplicationUser>();
+
+// AddAspNetIdentity post-configures the application cookie to SameSite=None (for cross-origin
+// IdP/RP setups) but only sets Secure when the request scheme is https. Over plain http that
+// combination is invalid per spec and every browser silently drops it, so login never persists
+// a session. This deployment proxies everything through one origin (nginx), so Lax works fine
+// and needs no TLS — registered as PostConfigure, after Duende's own, so it runs last and wins.
+builder.Services.PostConfigure<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme, options =>
+{
+    options.Cookie.SameSite = SameSiteMode.Lax;
+});
 
 builder.Services.AddRazorPages();
 builder.Services.AddAuthorization();
