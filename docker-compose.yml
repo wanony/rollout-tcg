@@ -206,6 +206,8 @@ services:
       ASPNETCORE_URLS: http://+:5000
       Redis__ConnectionString: "redis:6379"
       Cors__AllowedOrigins: "http://localhost,https://rollout.wanony.dev"
+      Jwt__ValidIssuers__0: "http://localhost:8080"
+      Jwt__ValidIssuers__1: "https://rollout.wanony.dev"
     ports:
       - "5010:5000"
     depends_on:

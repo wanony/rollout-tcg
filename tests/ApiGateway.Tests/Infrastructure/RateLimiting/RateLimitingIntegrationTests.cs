@@ -1,5 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
 using FluentAssertions;
+using Microsoft.IdentityModel.Tokens;
 
 namespace TCGTrading.ApiGateway.Tests.Infrastructure.RateLimiting;
 
@@ -72,14 +75,11 @@ public class RateLimitingIntegrationTests(ApiGatewayFixture fixture)
 
     private static string CreateJwt(string sub)
     {
-        var header = Base64UrlEncode("""{"alg":"none","typ":"JWT"}""");
-        var payload = Base64UrlEncode($$"""{"sub":"{{sub}}"}""");
-        return $"{header}.{payload}.";
+        var creds = new SigningCredentials(ApiGatewayFixture.SigningKey, SecurityAlgorithms.HmacSha256);
+        var token = new JwtSecurityToken(
+            claims: [new Claim("sub", sub)],
+            expires: DateTime.UtcNow.AddMinutes(5),
+            signingCredentials: creds);
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
-    private static string Base64UrlEncode(string input) =>
-        Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(input))
-            .TrimEnd('=')
-            .Replace('+', '-')
-            .Replace('/', '_');
 }

@@ -2,7 +2,6 @@ import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-
 import { useEffect, ReactNode, useState, useMemo, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useAuth } from './auth/useAuth'
-import { setAuthToken } from './api/client'
 import Navbar from './components/Navbar'
 import CommandPalette, { PageCommandsContext, PaletteCommand } from './components/CommandPalette'
 import LoginPage from './pages/LoginPage'
@@ -37,7 +36,6 @@ const ROUTE_COLORS: Record<string, [number, number, number]> = {
 const DEFAULT_COLOR: [number, number, number] = [0.03, 0.06, 0.18]
 
 export default function App() {
-  const { user } = useAuth()
   const location = useLocation()
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [pageCommands, setPageCommands] = useState<PaletteCommand[]>([])
@@ -50,10 +48,6 @@ export default function App() {
 
   const ditherColor = ditherOverride ?? routeColor
   const setOverride = useCallback((c: [number, number, number] | null) => setDitherOverride(c), [])
-
-  useEffect(() => {
-    setAuthToken(user?.access_token ?? null)
-  }, [user])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {

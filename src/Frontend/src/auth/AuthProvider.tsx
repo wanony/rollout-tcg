@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, UserManager, WebStorageStateStore } from 'oidc-client-ts'
 import { oidcSettings, DEMO_EMAIL } from './authConfig'
+import { setAuthToken } from '../api/client'
 
 interface AuthContextValue {
   user: User | null
@@ -25,13 +26,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     manager.getUser()
       .then(u => {
+        setAuthToken(u?.access_token ?? null)
         setUser(u)
         setIsLoading(false)
       })
       .catch(() => setIsLoading(false))
 
-    const onUserLoaded = (u: User) => setUser(u)
-    const onUserUnloaded = () => setUser(null)
+    // Set the axios header in the same handler that updates `user`, not a separate effect in a
+    // parent component — otherwise a query fired by a just-mounted child can race ahead of it
+    // (e.g. a hard reload straight onto a protected route sends its first request with no token).
+    const onUserLoaded = (u: User) => { setAuthToken(u.access_token); setUser(u) }
+    const onUserUnloaded = () => { setAuthToken(null); setUser(null) }
     manager.events.addUserLoaded(onUserLoaded)
     manager.events.addUserUnloaded(onUserUnloaded)
 

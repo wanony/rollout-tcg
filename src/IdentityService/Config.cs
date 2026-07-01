@@ -16,6 +16,13 @@ public static class Config
         new ApiScope("tcg.full", "TCG Trading Full Access")
     ];
 
+    // Gives access tokens an "aud" claim (tcg-api) so the gateway can validate audience,
+    // not just signature/issuer — without this Duende issues scope-only tokens with no audience.
+    public static IEnumerable<ApiResource> ApiResources =>
+    [
+        new ApiResource("tcg-api", "TCG Trading API") { Scopes = { "tcg.full" } }
+    ];
+
     public static IEnumerable<Client> Clients =>
     [
         // SPA — Authorization Code + PKCE, no client secret (browser-safe)

@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using RedisRateLimiting;
 using StackExchange.Redis;
-using System.Text;
-using System.Text.Json;
 using System.Threading.RateLimiting;
 
 namespace TCGTrading.ApiGateway.Infrastructure.RateLimiting;
@@ -91,40 +89,8 @@ public static class RateLimitingExtensions
         return builder;
     }
 
-    // TODO: when real JWT auth lands, replace manual decode with httpContext.User.FindFirst("sub")
-    // — until then, sub is unverified and any caller can spoof it to get the higher auth limit.
-    private static string? ExtractSub(HttpContext httpContext)
-    {
-        var authHeader = httpContext.Request.Headers.Authorization.ToString();
-        if (!authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-            return null;
-
-        var token = authHeader["Bearer ".Length..];
-        var parts = token.Split('.');
-        if (parts.Length != 3) return null;
-
-        try
-        {
-            var payload = parts[1];
-            var remainder = payload.Length % 4;
-            string padded;
-            if (remainder == 2)
-                padded = payload + "==";
-            else if (remainder == 3)
-                padded = payload + "=";
-            else
-                padded = payload;
-
-            var base64 = padded.Replace('-', '+').Replace('_', '/');
-            var json = Encoding.UTF8.GetString(Convert.FromBase64String(base64));
-            using var doc = JsonDocument.Parse(json);
-            return doc.RootElement.TryGetProperty("sub", out var sub)
-                ? sub.GetString()
-                : null;
-        }
-        catch
-        {
-            return null;
-        }
-    }
+    // JWT Bearer middleware (which runs before UseRateLimiter) has already verified the token's
+    // signature/issuer/audience by this point, so the sub claim here is trustworthy.
+    private static string? ExtractSub(HttpContext httpContext) =>
+        httpContext.User.FindFirst("sub")?.Value;
 }
