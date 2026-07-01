@@ -1,11 +1,12 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, UserManager, WebStorageStateStore } from 'oidc-client-ts'
-import { oidcSettings } from './authConfig'
+import { oidcSettings, DEMO_EMAIL } from './authConfig'
 
 interface AuthContextValue {
   user: User | null
   isLoading: boolean
   login: () => void
+  loginAsDemo: () => void
   logout: () => void
   userManager: UserManager
 }
@@ -46,6 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       login: () => manager.signinRedirect().catch(err => {
         console.error('[auth] signinRedirect failed:', err)
+        alert(`Sign-in failed: ${err?.message ?? err}`)
+      }),
+      loginAsDemo: () => manager.signinRedirect({ extraQueryParams: { login_hint: DEMO_EMAIL } }).catch(err => {
+        console.error('[auth] demo signinRedirect failed:', err)
         alert(`Sign-in failed: ${err?.message ?? err}`)
       }),
       logout: () => manager.signoutRedirect(),

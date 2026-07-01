@@ -9,6 +9,7 @@ using TCGTrading.Marketplace.Domain.Enums;
 using TCGTrading.Marketplace.Infrastructure.Messaging;
 using TCGTrading.Marketplace.Infrastructure.Persistence;
 using TCGTrading.SharedKernel.Contracts;
+using TCGTrading.SharedKernel.Demo;
 using TCGTrading.SharedKernel.Infrastructure.Telemetry;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,19 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<MarketplaceDbContext>();
     await db.Database.MigrateAsync();
+
+    var repo = scope.ServiceProvider.GetRequiredService<IListingRepository>();
+    if ((await repo.GetActiveAsync()).Count == 0)
+    {
+        var demoUserId = Guid.Parse(DemoSeedData.UserId);
+        var otherSellerId = Guid.Parse("d0000000-0000-0000-0000-000000000002");
+
+        // Demo user's own listing, to try the seller side of the offer flow (View Offers/Accept/Reject)
+        await repo.AddAsync(Listing.Create(demoUserId, Guid.NewGuid(), "Pikachu", "NearMint", 12.00m));
+        // Someone else's listings, to try the buyer side (Buy/Make Offer)
+        await repo.AddAsync(Listing.Create(otherSellerId, Guid.NewGuid(), "Charizard", "NearMint", 60.00m));
+        await repo.AddAsync(Listing.Create(otherSellerId, Guid.NewGuid(), "Mewtwo", "LightlyPlayed", 35.00m));
+    }
 }
 
 app.MapPrometheusScrapingEndpoint();

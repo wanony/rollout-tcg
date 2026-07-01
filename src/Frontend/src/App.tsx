@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, ReactNode, useState, useMemo, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useAuth } from './auth/useAuth'
@@ -17,8 +17,9 @@ import ScrollToTopFAB from './components/ScrollToTopFAB'
 import { DitherColorContext } from './components/DitherColorContext'
 
 function RequireAuth({ children }: { children: ReactNode }) {
-  const { user, isLoading, login } = useAuth()
-  useEffect(() => { if (!isLoading && !user) login() }, [user, isLoading, login])
+  const { user, isLoading } = useAuth()
+  const navigate = useNavigate()
+  useEffect(() => { if (!isLoading && !user) navigate('/login', { replace: true }) }, [user, isLoading, navigate])
   if (isLoading) return (
     <div className="flex h-40 items-center justify-center text-slate-400">Loading…</div>
   )

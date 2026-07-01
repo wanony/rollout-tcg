@@ -8,6 +8,7 @@ using TCGTrading.IdentityService;
 using TCGTrading.IdentityService.Data;
 using TCGTrading.IdentityService.Endpoints;
 using TCGTrading.IdentityService.Models;
+using TCGTrading.SharedKernel.Demo;
 using TCGTrading.SharedKernel.Infrastructure.Telemetry;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,6 +82,20 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    if (await userManager.FindByEmailAsync(DemoSeedData.Email) is null)
+    {
+        var demoUser = new ApplicationUser
+        {
+            Id = DemoSeedData.UserId,
+            UserName = DemoSeedData.Email,
+            Email = DemoSeedData.Email,
+            EmailConfirmed = true,
+            DisplayName = "Demo"
+        };
+        await userManager.CreateAsync(demoUser, DemoSeedData.Password);
+    }
 }
 
 app.UseForwardedHeaders();

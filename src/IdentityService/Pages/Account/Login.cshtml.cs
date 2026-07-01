@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TCGTrading.IdentityService.Models;
+using TCGTrading.SharedKernel.Demo;
 
 namespace TCGTrading.IdentityService.Pages.Account;
 
@@ -17,7 +18,27 @@ public class LoginModel(
     [BindProperty] public string? ReturnUrl { get; set; }
     public string? ErrorMessage { get; set; }
 
-    public void OnGet(string? returnUrl = null) => ReturnUrl = returnUrl;
+    public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
+    {
+        ReturnUrl = returnUrl;
+
+        // login_hint=demo@rollout.dev is how the SPA's "Continue as Demo User" button asks for
+        // one-click access to the seeded demo account — sign in immediately, skip the form.
+        var context = await interaction.GetAuthorizationContextAsync(returnUrl);
+        if (context?.LoginHint == DemoSeedData.Email)
+        {
+            var demoUser = await userManager.FindByEmailAsync(DemoSeedData.Email);
+            if (demoUser != null)
+            {
+                await signInManager.SignInAsync(demoUser, isPersistent: false);
+                if (interaction.IsValidReturnUrl(ReturnUrl) || Url.IsLocalUrl(ReturnUrl))
+                    return Redirect(ReturnUrl!);
+                return Redirect("~/");
+            }
+        }
+
+        return Page();
+    }
 
     public async Task<IActionResult> OnPostAsync()
     {

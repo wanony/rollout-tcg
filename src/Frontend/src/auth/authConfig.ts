@@ -1,5 +1,8 @@
 export const IDENTITY_URL = window.location.origin
 
+// Matches DemoSeedData.Email in SharedKernel — the fixed demo account seeded by IdentityService.
+export const DEMO_EMAIL = 'demo@rollout.dev'
+
 export const oidcSettings = {
   authority: IDENTITY_URL,
   client_id: 'spa',

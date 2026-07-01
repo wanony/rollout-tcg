@@ -5,6 +5,7 @@ using TCGTrading.Portfolio.Application.DTOs;
 using TCGTrading.Portfolio.Application.Interfaces;
 using TCGTrading.Portfolio.Domain.Entities;
 using TCGTrading.Portfolio.Infrastructure.Persistence;
+using TCGTrading.SharedKernel.Demo;
 using TCGTrading.SharedKernel.Infrastructure.Telemetry;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,15 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PortfolioDbContext>();
     await db.Database.MigrateAsync();
+
+    var repo = scope.ServiceProvider.GetRequiredService<ICollectionRepository>();
+    var demoUserId = Guid.Parse(DemoSeedData.UserId);
+    if ((await repo.GetByUserIdAsync(demoUserId)).Count == 0)
+    {
+        await repo.AddAsync(CollectionItem.Create(demoUserId, "basep-1", "Pikachu", 2, "NearMint", 8.00m));
+        await repo.AddAsync(CollectionItem.Create(demoUserId, "pl4-1", "Charizard", 1, "LightlyPlayed", 45.00m));
+        await repo.AddAsync(CollectionItem.Create(demoUserId, "basep-3", "Mewtwo", 1, "NearMint", 15.00m));
+    }
 }
 
 app.MapPrometheusScrapingEndpoint();

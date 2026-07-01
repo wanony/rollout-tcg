@@ -41,7 +41,8 @@ function NavLink({ to, label }: { to: string; label: string }) {
 }
 
 export default function Navbar() {
-  const { user, login, logout } = useAuth()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
 
   return (
     <div className="fixed left-0 right-0 top-0 z-50 px-4 pt-3">
@@ -78,7 +79,7 @@ export default function Navbar() {
               </>
             ) : (
               <button
-                onClick={login}
+                onClick={() => navigate('/login')}
                 className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-blue-500"
               >
                 Sign in
