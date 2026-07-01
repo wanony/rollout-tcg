@@ -58,7 +58,13 @@ export interface CardFilters {
   rarity?: string
   setId?: string
   illustrator?: string
-  sort?: 'newest' | 'price-asc' | 'price-desc' | 'name'
+  sort?: 'newest' | 'name'
+}
+
+// id format is "<setId>-<localId>" (e.g. "sv10.5b-001") — setId may itself contain dashes,
+// so drop only the last segment rather than splitting on the first dash.
+function setIdFromCardId(cardId: string): string {
+  return cardId.slice(0, cardId.lastIndexOf('-'))
 }
 
 // TCGdex shapes
@@ -180,6 +186,7 @@ export async function searchPokemonCards(
   filters: CardFilters = {},
   page = 1,
   pageSize = 20,
+  sets: PokemonSet[] = [],
 ): Promise<PokemonCardPage> {
   const params = new URLSearchParams()
   const hasFilter = !!(filters.name || filters.type || filters.rarity || filters.setId || filters.illustrator)
@@ -193,7 +200,18 @@ export async function searchPokemonCards(
   const all = (await fetchFiltered(params)).filter(c => c.image)
 
   // Client-side sort
-  if (filters.sort === 'name') all.sort((a, b) => a.name.localeCompare(b.name))
+  if (filters.sort === 'name') {
+    all.sort((a, b) => a.name.localeCompare(b.name))
+  } else {
+    // "newest": rank by the card's set release date, newest set first, then by card number within a set
+    const releaseDateBySet = new Map(sets.map(s => [s.id, s.releaseDate]))
+    all.sort((a, b) => {
+      const dateA = releaseDateBySet.get(setIdFromCardId(a.id)) ?? ''
+      const dateB = releaseDateBySet.get(setIdFromCardId(b.id)) ?? ''
+      if (dateA !== dateB) return dateB.localeCompare(dateA)
+      return b.localId.localeCompare(a.localId, undefined, { numeric: true })
+    })
+  }
 
   const start = (page - 1) * pageSize
   const slice = all.slice(start, start + pageSize)

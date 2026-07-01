@@ -11,12 +11,6 @@ import AutocompleteDropdown, { AutocompleteDropdownHandle } from '../components/
 import { PageCommandsContext } from '../components/CommandPalette'
 import { useDitherOverride, typeGlowToDither } from '../components/DitherColorContext'
 
-function marketPrice(card: PokemonCard): string | null {
-  const p = card.tcgplayer?.prices
-  const val = p?.holofoil?.market ?? p?.normal?.market ?? p?.reverseHolofoil?.market
-  return val != null ? `$${val.toFixed(2)}` : null
-}
-
 export default function CardsPage() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const autocompleteRef = useRef<AutocompleteDropdownHandle>(null)
@@ -65,10 +59,10 @@ export default function CardsPage() {
         action: () => setFilters(f => ({ sort: f.sort })),
       },
       {
-        id: 'sort-price',
-        label: 'Sort by price (high → low)',
+        id: 'sort-name',
+        label: 'Sort by name (A → Z)',
         group: 'Search',
-        action: () => setFilters(f => ({ ...f, sort: 'price-desc' })),
+        action: () => setFilters(f => ({ ...f, sort: 'name' })),
       },
     ]
     setPageCommands(commands)
@@ -82,8 +76,8 @@ export default function CardsPage() {
   })
 
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ['pokemon-cards', filters],
-    queryFn: ({ pageParam }) => searchPokemonCards(filters, pageParam as number, 20),
+    queryKey: ['pokemon-cards', filters, sets],
+    queryFn: ({ pageParam }) => searchPokemonCards(filters, pageParam as number, 20, sets),
     initialPageParam: 1,
     getNextPageParam: (last) =>
       last.page * last.pageSize < last.totalCount ? last.page + 1 : undefined,
@@ -93,7 +87,6 @@ export default function CardsPage() {
   const rawCards = data?.pages.flatMap(p => p.data) ?? []
   const seen = new Set<string>()
   const cards = rawCards.filter(c => seen.has(c.id) ? false : (seen.add(c.id), true))
-  const totalCount = data?.pages[0]?.totalCount ?? 0
 
   // Infinite scroll sentinel
   useEffect(() => {
@@ -156,8 +149,8 @@ export default function CardsPage() {
       {/* Filters */}
       <FilterChips filters={filters} sets={sets} onChange={setFilters} />
 
-      {/* Sort + count */}
-      <SortDropdown filters={filters} totalCount={totalCount} onChange={setFilters} />
+      {/* Sort */}
+      <SortDropdown filters={filters} onChange={setFilters} />
 
       {/* Card grid */}
       {isLoading && (
@@ -189,7 +182,6 @@ export default function CardsPage() {
               key={card.id}
               card={card}
               index={i}
-              price={marketPrice(card)}
               onClick={() => setSelectedCard(card)}
             />
           ))}
