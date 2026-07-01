@@ -37,7 +37,7 @@
     <PackageVersion Include="Serilog.Sinks.Grafana.Loki" Version="8.3.0" />
     <PackageVersion Include="Serilog.Formatting.Compact" Version="2.0.0" />
     <!-- Test infrastructure -->
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.9" />
     <PackageVersion Include="RedisRateLimiting.AspNetCore" Version="1.2.1" />
     <PackageVersion Include="StackExchange.Redis" Version="2.8.0" />
     <PackageVersion Include="Testcontainers.Redis" Version="3.10.0" />
