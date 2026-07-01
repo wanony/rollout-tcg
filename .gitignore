@@ -488,5 +488,8 @@ docker-compose.override.local.yml
 # Duende IdentityServer developer signing key (regenerated on each restart)
 tempkey.jwk
 
+# Local-only notes (VPS access, deployment state) — never commit
+CLAUDE.md
+
 # MkDocs built output
 site/
