@@ -59,6 +59,7 @@ app.MapPost("/prices/{cardId:guid}", async (
     RecordPriceRequest request,
     IPriceRepository repo,
     IPublishEndpoint publisher,
+    PricingOutboxDbContext outbox,
     CancellationToken ct) =>
 {
     if (request.Price <= 0)
@@ -75,6 +76,10 @@ app.MapPost("/prices/{cardId:guid}", async (
     await publisher.Publish(new CardPriceUpdatedEvent(
         Guid.NewGuid(), DateTime.UtcNow, cardId, request.ProviderCardId ?? "", "tcgdex",
         request.Price, request.Price, request.Price), ct);
+
+    // Flush the EF bus outbox: Publish only captures the message against the scoped
+    // PricingOutboxDbContext; it isn't written to OutboxMessage until SaveChanges.
+    await outbox.SaveChangesAsync(ct);
 
     return Results.Created(
         $"/prices/{cardId}/history",

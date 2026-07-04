@@ -3,6 +3,7 @@ using Dapper;
 using MassTransit;
 using TCGTrading.Pricing.Application.Interfaces;
 using TCGTrading.Pricing.Domain.Entities;
+using TCGTrading.Pricing.Infrastructure.Persistence;
 using TCGTrading.SharedKernel.Contracts;
 
 namespace TCGTrading.Pricing.Infrastructure.Ingestion;
@@ -65,8 +66,13 @@ public class PriceIngestionWorker(
             var watchedCardRepo = scope.ServiceProvider.GetRequiredService<IWatchedCardRepository>();
             var priceRepo = scope.ServiceProvider.GetRequiredService<IPriceRepository>();
             var publisher = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+            var outbox = scope.ServiceProvider.GetRequiredService<PricingOutboxDbContext>();
 
             await RunOnceAsync(priceClient, watchedCardRepo, priceRepo, publisher, ct);
+
+            // Flush the EF bus outbox: messages published during this tick are only captured
+            // against the scoped PricingOutboxDbContext until SaveChanges writes them out.
+            await outbox.SaveChangesAsync(ct);
         }
         finally
         {
