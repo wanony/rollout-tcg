@@ -202,11 +202,44 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:5006
       ConnectionStrings__PricingDb: "Host=timescaledb;Port=5432;Database=db_pricing;Username=tcg;Password=dev"
+      ConnectionStrings__PricingOutboxDb: "Host=postgres;Port=5432;Database=db_pricing_outbox;Username=tcg;Password=dev"
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: tcg
+      RabbitMq__Password: dev
     ports:
       - "5006:5006"
     depends_on:
       timescaledb:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  alerts:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: src/Alerts/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5007
+      ConnectionStrings__AlertsDb: "Host=postgres;Port=5432;Database=db_alerts;Username=tcg;Password=dev"
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Username: tcg
+      RabbitMq__Password: dev
+      Cors__AllowedOrigin: "http://localhost:3000"
+    ports:
+      - "5007:5007"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5007/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   api-gateway:
     restart: unless-stopped
@@ -234,6 +267,8 @@ services:
       card-catalog:
         condition: service_started
       pricing:
+        condition: service_started
+      alerts:
         condition: service_started
 
   frontend:
