@@ -4,3 +4,5 @@ CREATE DATABASE db_portfolio;
 CREATE DATABASE db_marketplace;
 CREATE DATABASE db_pricing;
 CREATE DATABASE db_notification;
+CREATE DATABASE db_alerts;
+CREATE DATABASE db_pricing_outbox;
