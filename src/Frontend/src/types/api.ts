@@ -54,6 +54,28 @@ export interface CardSearchResponse {
   pageSize: number
 }
 
+export interface AlertResponse {
+  id: string
+  userId: string
+  providerCardId: string
+  cardName: string
+  direction: 'Below' | 'Above'
+  targetPriceUsd: number
+  recurring: boolean
+  isActive: boolean
+  lastFiredAt?: string
+  createdAt: string
+}
+
+export interface CreateAlertRequest {
+  userId: string
+  providerCardId: string
+  cardName: string
+  direction: 'Below' | 'Above'
+  targetPriceUsd: number
+  recurring: boolean
+}
+
 export interface Notification {
   id: string
   userId: string

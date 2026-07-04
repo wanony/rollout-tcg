@@ -1,11 +1,12 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import BorderGlow from './BorderGlow'
 import { primaryGlow, TYPE_GLOW, typeGradientColors } from '../lib/typeColors'
 import { PokemonCard, CardmarketPricing, fetchCardById } from '../api/pokemontcg'
 import { addCardToPortfolio } from '../api/portfolio'
+import { createAlert, getAlerts, deleteAlert } from '../api/alerts'
 import { useAuth } from '../auth/useAuth'
 
 interface CardDetailModalProps {
@@ -73,6 +74,124 @@ function PriceSparkline({ glowColor, cardmarket }: { glowColor: string; cardmark
       <path d={area} fill={`url(#${gradId})`} />
       <path d={pts} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeOpacity={flat ? 0.3 : 1} />
     </svg>
+  )
+}
+
+function PriceAlertControl({ userId, providerCardId, cardName }: { userId: string; providerCardId: string; cardName: string }) {
+  const queryClient = useQueryClient()
+  const [direction, setDirection] = useState<'Below' | 'Above'>('Below')
+  const [targetPrice, setTargetPrice] = useState('')
+  const [recurring, setRecurring] = useState(false)
+  const [createState, setCreateState] = useState<'idle' | 'loading' | 'error'>('idle')
+
+  const { data: alerts } = useQuery({
+    queryKey: ['alerts', userId],
+    queryFn: () => getAlerts(userId),
+  })
+  const cardAlerts = (alerts ?? []).filter((a) => a.providerCardId === providerCardId)
+
+  const handleCreate = async () => {
+    const price = parseFloat(targetPrice)
+    if (!Number.isFinite(price) || price <= 0 || createState === 'loading') return
+    setCreateState('loading')
+    try {
+      await createAlert({
+        userId,
+        providerCardId,
+        cardName,
+        direction,
+        targetPriceUsd: price,
+        recurring,
+      })
+      setTargetPrice('')
+      setRecurring(false)
+      setCreateState('idle')
+      await queryClient.invalidateQueries({ queryKey: ['alerts', userId] })
+    } catch {
+      setCreateState('error')
+      setTimeout(() => setCreateState('idle'), 2000)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    await deleteAlert(id)
+    await queryClient.invalidateQueries({ queryKey: ['alerts', userId] })
+  }
+
+  return (
+    <div>
+      <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">
+        Price alert
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex overflow-hidden rounded-lg border border-white/[0.08]">
+          {(['Below', 'Above'] as const).map((d) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => setDirection(d)}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                direction === d
+                  ? 'bg-slate-700 text-slate-100'
+                  : 'bg-slate-800/60 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          value={targetPrice}
+          onChange={(e) => setTargetPrice(e.target.value)}
+          placeholder="Target price (USD)"
+          className="w-36 rounded-lg bg-slate-800/60 px-3 py-1.5 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none"
+        />
+        <label className="flex items-center gap-1.5 text-xs text-slate-400">
+          <input
+            type="checkbox"
+            checked={recurring}
+            onChange={(e) => setRecurring(e.target.checked)}
+            className="rounded border-white/[0.08]"
+          />
+          Recurring
+        </label>
+        <button
+          type="button"
+          onClick={handleCreate}
+          disabled={createState === 'loading' || !targetPrice}
+          className="rounded-lg bg-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-100 transition-colors hover:bg-slate-600 disabled:opacity-50"
+        >
+          {createState === 'loading' ? 'Creating…' : createState === 'error' ? 'Failed — retry' : 'Create alert'}
+        </button>
+      </div>
+
+      {cardAlerts.length > 0 && (
+        <ul className="mt-2 flex flex-col gap-1.5">
+          {cardAlerts.map((a) => (
+            <li
+              key={a.id}
+              className="flex items-center justify-between rounded-lg bg-slate-800/60 px-3 py-2 text-xs"
+            >
+              <span className="text-slate-300">
+                {a.direction} ${a.targetPriceUsd.toFixed(2)}
+                {a.recurring && <span className="ml-1 text-slate-500">(recurring)</span>}
+                {!a.isActive && <span className="ml-1 text-slate-500">(fired)</span>}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleDelete(a.id)}
+                className="text-slate-500 transition-colors hover:text-red-400"
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   )
 }
 
@@ -191,6 +310,11 @@ export default function CardDetailModal({ card: cardProp, onClose }: CardDetailM
                 </p>
                 <PriceSparkline glowColor={glowColor} cardmarket={card.cardmarket} />
               </div>
+
+              {/* Price alert */}
+              {user && (
+                <PriceAlertControl userId={user.profile.sub} providerCardId={card.id} cardName={card.name} />
+              )}
 
               {/* TCGPlayer USD prices */}
               {hasPrices && (
