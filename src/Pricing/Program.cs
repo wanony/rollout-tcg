@@ -9,6 +9,7 @@ using TCGTrading.Pricing.Application.Interfaces;
 using TCGTrading.Pricing.Domain.Entities;
 using TCGTrading.Pricing.Domain.Enums;
 using TCGTrading.Pricing.Infrastructure.External;
+using TCGTrading.Pricing.Infrastructure.Ingestion;
 using TCGTrading.Pricing.Infrastructure.Messaging;
 using TCGTrading.Pricing.Infrastructure.Persistence;
 using TCGTrading.Pricing.Infrastructure.Seed;
@@ -33,6 +34,7 @@ builder.Services.AddHttpClient<ITcgdexPriceClient, TcgdexPriceClient>(client =>
 builder.AddPriceHistory();
 builder.AddOutboxPersistence();
 builder.AddMessaging();
+builder.Services.AddHostedService<PriceIngestionWorker>();
 
 var app = builder.Build();
 

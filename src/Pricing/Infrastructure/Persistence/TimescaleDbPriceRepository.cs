@@ -64,4 +64,18 @@ public sealed class TimescaleDbPriceRepository(IDbConnection db) : IPriceReposit
                 "SELECT EXISTS (SELECT 1 FROM price_snapshots LIMIT 1)",
                 cancellationToken: ct));
     }
+
+    public async Task<decimal?> GetLatestPriceAsync(Guid cardId, CancellationToken ct = default)
+    {
+        const string sql = """
+            SELECT price
+            FROM price_snapshots
+            WHERE card_id = @cardId
+            ORDER BY recorded_at DESC
+            LIMIT 1
+            """;
+
+        return await db.ExecuteScalarAsync<decimal?>(
+            new CommandDefinition(sql, new { cardId }, cancellationToken: ct));
+    }
 }

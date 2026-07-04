@@ -13,6 +13,7 @@
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="Testcontainers.RabbitMq" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="MassTransit.TestFramework" />
     <ProjectReference Include="../../src/Pricing/TCGTrading.Pricing.Api.csproj" />
   </ItemGroup>
 </Project>

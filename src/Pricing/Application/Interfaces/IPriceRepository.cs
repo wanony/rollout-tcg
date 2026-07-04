@@ -16,4 +16,6 @@ public interface IPriceRepository
         CancellationToken ct = default);
 
     Task<bool> HasAnyAsync(CancellationToken ct = default);
+
+    Task<decimal?> GetLatestPriceAsync(Guid cardId, CancellationToken ct = default);
 }
