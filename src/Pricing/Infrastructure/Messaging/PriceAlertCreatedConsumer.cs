@@ -8,8 +8,8 @@ public class PriceAlertCreatedConsumer(IWatchedCardRepository repo) : IConsumer<
 {
     public async Task Consume(ConsumeContext<PriceAlertCreatedEvent> ctx)
     {
-        // PriceAlertCreatedEvent doesn't carry CardId, so we increment with Guid.Empty;
-        // CardId gets backfilled the next time CardPriceUpdatedEvent is published for this ProviderCardId.
+        // ponytail: CardId is unknown from PriceAlertCreatedEvent, so it stays Guid.Empty for alert-created rows.
+        // The ingestion worker polls by ProviderCardId, so CardId isn't needed here; add a backfill consumer if a real CardId is ever required.
         await repo.IncrementAsync(ctx.Message.ProviderCardId, Guid.Empty, ctx.CancellationToken);
     }
 }
