@@ -108,4 +108,37 @@ public class CardPriceUpdatedConsumerTests : IAsyncLifetime
         var triggerCount = await _db.AlertTriggers.CountAsync();
         Assert.Equal(1, triggerCount);
     }
+
+    [Fact]
+    public async Task Recurring_alert_fires_again_on_distinct_event_at_same_price()
+    {
+        await SeedActiveAlert("basep-4", AlertDirection.Below, 10m, recurring: true);
+        await SeedLastSeen("basep-4", 12m);
+
+        var firstEvent = new CardPriceUpdatedEvent(
+            Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), "basep-4", "tcgdex", 9m, 8m, 9.5m);
+        await _harness.Bus.Publish(firstEvent);
+        Assert.True(await _harness.Consumed.Any<CardPriceUpdatedEvent>(x => x.Context.Message.EventId == firstEvent.EventId));
+
+        // simulate price moving back above target (re-arming the hysteresis band) before
+        // re-crossing below via a distinct event
+        var lastSeen = await _db.LastSeenPrices.SingleAsync(l => l.ProviderCardId == "basep-4");
+        await _db.Entry(lastSeen).ReloadAsync(); // this context's tracked copy is stale vs the
+                                                  // consumer's own DbContext instance, which already
+                                                  // wrote 9m for the first event
+        lastSeen.UpdatePrice(12m, DateTime.UtcNow);
+        await _db.SaveChangesAsync();
+
+        var secondEvent = new CardPriceUpdatedEvent(
+            Guid.NewGuid(), DateTime.UtcNow, Guid.NewGuid(), "basep-4", "tcgdex", 9m, 8m, 9.5m);
+        await _harness.Bus.Publish(secondEvent);
+        Assert.True(await _harness.Consumed.Any<CardPriceUpdatedEvent>(x => x.Context.Message.EventId == secondEvent.EventId));
+
+
+        Assert.Equal(2, (await _harness.Published.SelectAsync<PriceAlertTriggeredEvent>().ToListAsync()).Count);
+
+        var seededAlert = await _db.PriceAlerts.SingleAsync(a => a.ProviderCardId == "basep-4");
+        var triggerCount = await _db.AlertTriggers.CountAsync(t => t.AlertId == seededAlert.Id);
+        Assert.Equal(2, triggerCount);
+    }
 }

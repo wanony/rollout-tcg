@@ -25,7 +25,7 @@ public class AlertsDbContext(DbContextOptions<AlertsDbContext> options) : DbCont
         modelBuilder.Entity<AlertTrigger>(e =>
         {
             e.HasKey(x => x.Id);
-            e.HasIndex(x => new { x.AlertId, x.MarketPriceUsd }).IsUnique();
+            e.HasIndex(x => new { x.AlertId, x.SourceEventId }).IsUnique();
         });
 
         modelBuilder.Entity<LastSeenPrice>(e =>

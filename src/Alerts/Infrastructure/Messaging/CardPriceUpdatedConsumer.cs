@@ -22,12 +22,12 @@ public class CardPriceUpdatedConsumer(IAlertRepository repo) : IConsumer<CardPri
                     last?.MarketPriceUsd, e.MarketPriceUsd, Hysteresis))
                 continue;
 
-            // idempotency: same (alert, price) already recorded → skip
-            if (await repo.TriggerExistsAsync(alert.Id, e.MarketPriceUsd, ctx.CancellationToken))
+            // idempotency: same (alert, source event) already recorded → skip
+            if (await repo.TriggerExistsAsync(alert.Id, e.EventId, ctx.CancellationToken))
                 continue;
 
             alert.Fire(e.OccurredAt);
-            await repo.AddTriggerAsync(new AlertTrigger(alert.Id, e.MarketPriceUsd, e.OccurredAt), ctx.CancellationToken);
+            await repo.AddTriggerAsync(new AlertTrigger(alert.Id, e.EventId, e.MarketPriceUsd, e.OccurredAt), ctx.CancellationToken);
             await ctx.Publish(new PriceAlertTriggeredEvent(
                 Guid.NewGuid(), DateTime.UtcNow, alert.Id, alert.UserId,
                 alert.ProviderCardId, alert.CardName, alert.Direction.ToString(),

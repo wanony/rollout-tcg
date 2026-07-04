@@ -11,6 +11,6 @@ export async function getAlerts(userId: string): Promise<AlertResponse[]> {
   return data
 }
 
-export async function deleteAlert(id: string): Promise<void> {
-  await api.delete(`/alerts/${id}`)
+export async function deleteAlert(id: string, userId: string): Promise<void> {
+  await api.delete(`/alerts/${id}?userId=${userId}`)
 }

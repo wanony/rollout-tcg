@@ -82,12 +82,13 @@ app.MapGet("/alerts", async (
 
 app.MapDelete("/alerts/{id:guid}", async (
     Guid id,
+    Guid userId,
     IAlertRepository repo,
     IPublishEndpoint publisher,
     CancellationToken ct) =>
 {
     var alert = await repo.GetByIdAsync(id, ct);
-    if (alert is null) return Results.NotFound();
+    if (alert is null || alert.UserId != userId) return Results.NotFound();
     await repo.DeleteAsync(alert, ct);
     await publisher.Publish(new PriceAlertDeletedEvent(
         Guid.NewGuid(), DateTime.UtcNow, alert.Id, alert.ProviderCardId), ct);

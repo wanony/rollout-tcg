@@ -129,7 +129,7 @@ public class PriceIngestionWorker(
             ? watchedCard.CardId
             : DeterministicGuid.From(watchedCard.ProviderCardId);
 
-        var latestPrice = await priceRepo.GetLatestPriceAsync(cardId, ct);
+        var latestPrice = await priceRepo.GetLatestPriceAsync(cardId, "tcgdex", ct);
         if (latestPrice == price.Value)
             return;
 

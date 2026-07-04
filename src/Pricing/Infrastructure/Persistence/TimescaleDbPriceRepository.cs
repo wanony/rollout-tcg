@@ -65,17 +65,17 @@ public sealed class TimescaleDbPriceRepository(IDbConnection db) : IPriceReposit
                 cancellationToken: ct));
     }
 
-    public async Task<decimal?> GetLatestPriceAsync(Guid cardId, CancellationToken ct = default)
+    public async Task<decimal?> GetLatestPriceAsync(Guid cardId, string source, CancellationToken ct = default)
     {
         const string sql = """
             SELECT price
             FROM price_snapshots
-            WHERE card_id = @cardId
+            WHERE card_id = @cardId AND source = @source
             ORDER BY recorded_at DESC
             LIMIT 1
             """;
 
         return await db.ExecuteScalarAsync<decimal?>(
-            new CommandDefinition(sql, new { cardId }, cancellationToken: ct));
+            new CommandDefinition(sql, new { cardId, source }, cancellationToken: ct));
     }
 }

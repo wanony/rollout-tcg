@@ -205,9 +205,12 @@ namespace TCGTrading.Alerts.Api.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("MarketPriceUsd")
                         .HasColumnType("numeric");
 
+                    b.Property<Guid>("SourceEventId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AlertId", "MarketPriceUsd")
+                    b.HasIndex("AlertId", "SourceEventId")
                         .IsUnique();
 
                     b.ToTable("AlertTriggers");

@@ -29,8 +29,8 @@ public class AlertRepository(AlertsDbContext db) : IAlertRepository
     public async Task<LastSeenPrice?> GetLastSeenAsync(string providerCardId, CancellationToken ct = default)
         => await db.LastSeenPrices.FindAsync([providerCardId], ct);
 
-    public async Task<bool> TriggerExistsAsync(Guid alertId, decimal marketPriceUsd, CancellationToken ct = default)
-        => await db.AlertTriggers.AnyAsync(t => t.AlertId == alertId && t.MarketPriceUsd == marketPriceUsd, ct);
+    public async Task<bool> TriggerExistsAsync(Guid alertId, Guid sourceEventId, CancellationToken ct = default)
+        => await db.AlertTriggers.AnyAsync(t => t.AlertId == alertId && t.SourceEventId == sourceEventId, ct);
 
     public Task SaveChangesAsync(CancellationToken ct = default)
         => db.SaveChangesAsync(ct);

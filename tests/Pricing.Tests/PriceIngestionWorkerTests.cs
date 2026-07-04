@@ -48,7 +48,7 @@ public class PriceIngestionWorkerTests
 
         public Task<bool> HasAnyAsync(CancellationToken ct = default) => Task.FromResult(false);
 
-        public Task<decimal?> GetLatestPriceAsync(Guid cardId, CancellationToken ct = default)
+        public Task<decimal?> GetLatestPriceAsync(Guid cardId, string source, CancellationToken ct = default)
             => Task.FromResult(latestPrice);
     }
 

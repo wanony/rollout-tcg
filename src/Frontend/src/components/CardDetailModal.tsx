@@ -114,7 +114,7 @@ function PriceAlertControl({ userId, providerCardId, cardName }: { userId: strin
   }
 
   const handleDelete = async (id: string) => {
-    await deleteAlert(id)
+    await deleteAlert(id, userId)
     await queryClient.invalidateQueries({ queryKey: ['alerts', userId] })
   }
 
