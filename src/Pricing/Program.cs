@@ -8,6 +8,7 @@ using TCGTrading.SharedKernel.Infrastructure.Telemetry;
 using TCGTrading.Pricing.Application.Interfaces;
 using TCGTrading.Pricing.Domain.Entities;
 using TCGTrading.Pricing.Domain.Enums;
+using TCGTrading.Pricing.Infrastructure.External;
 using TCGTrading.Pricing.Infrastructure.Messaging;
 using TCGTrading.Pricing.Infrastructure.Persistence;
 using TCGTrading.Pricing.Infrastructure.Seed;
@@ -25,6 +26,10 @@ builder.Services.AddOpenTelemetry()
         .AddPrometheusExporter());
 
 builder.Services.AddSingleton<IPricingTelemetry, PricingTelemetry>();
+builder.Services.AddHttpClient<ITcgdexPriceClient, TcgdexPriceClient>(client =>
+{
+    client.BaseAddress = new Uri("https://api.tcgdex.net/");
+}).AddStandardResilienceHandler();
 builder.AddPriceHistory();
 builder.AddOutboxPersistence();
 builder.AddMessaging();
