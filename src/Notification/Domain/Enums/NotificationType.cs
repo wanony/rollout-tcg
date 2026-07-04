@@ -1,3 +1,3 @@
 namespace TCGTrading.Notification.Domain.Enums;
 
-public enum NotificationType { ListingPurchased, ListingSold }
+public enum NotificationType { ListingPurchased, ListingSold, PriceAlert }

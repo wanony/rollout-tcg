@@ -13,6 +13,7 @@ public static class MessagingExtensions
         builder.Services.AddMassTransit(x =>
         {
             x.AddConsumer<ListingPurchasedConsumer>();
+            x.AddConsumer<PriceAlertTriggeredConsumer>();
             x.UsingRabbitMq((ctx, cfg) =>
             {
                 cfg.Host(config["RabbitMq:Host"]!, config.GetValue<ushort>("RabbitMq:Port", 5672), "/", h =>
