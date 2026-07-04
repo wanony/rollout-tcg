@@ -60,6 +60,14 @@ public class PriceIngestionWorkerTests
         UpdatedAt = DateTime.UtcNow,
     };
 
+    private static WatchedCard MakeWatchedCardWithoutCardId() => new()
+    {
+        ProviderCardId = "base1-001",
+        CardId = Guid.Empty,
+        RefCount = 1,
+        UpdatedAt = DateTime.UtcNow,
+    };
+
     [Fact]
     public async Task RunOnceAsync_WritesSnapshotAndPublishesEvent_WhenPriceChanged()
     {
@@ -82,6 +90,38 @@ public class PriceIngestionWorkerTests
 
             var published = harness.Published.Select<CardPriceUpdatedEvent>().Single().Context.Message;
             published.CardId.Should().Be(watchedCard.CardId);
+            published.ProviderCardId.Should().Be(watchedCard.ProviderCardId);
+            published.MarketPriceUsd.Should().Be(9.00m);
+        }
+        finally
+        {
+            await harness.Stop();
+        }
+    }
+
+    [Fact]
+    public async Task RunOnceAsync_UsesDeterministicGuid_WhenWatchedCardHasNoCardId()
+    {
+        using var harness = new InMemoryTestHarness();
+        await harness.Start();
+        try
+        {
+            var watchedCard = MakeWatchedCardWithoutCardId();
+            var expectedCardId = DeterministicGuid.From(watchedCard.ProviderCardId);
+            var priceClient = new StubTcgdexPriceClient(9.00m);
+            var watchedCardRepo = new StubWatchedCardRepository([watchedCard]);
+            var priceRepo = new FakePriceRepository(latestPrice: 8.00m);
+            var worker = new PriceIngestionWorker(
+                new ConfigurationBuilder().Build(),
+                NullLogger<PriceIngestionWorker>.Instance);
+
+            await worker.RunOnceAsync(priceClient, watchedCardRepo, priceRepo, harness.Bus, CancellationToken.None);
+
+            priceRepo.Snapshots.Should().ContainSingle(s => s.CardId == expectedCardId && s.Price == 9.00m);
+            (await harness.Published.Any<CardPriceUpdatedEvent>()).Should().BeTrue();
+
+            var published = harness.Published.Select<CardPriceUpdatedEvent>().Single().Context.Message;
+            published.CardId.Should().Be(expectedCardId);
             published.ProviderCardId.Should().Be(watchedCard.ProviderCardId);
             published.MarketPriceUsd.Should().Be(9.00m);
         }

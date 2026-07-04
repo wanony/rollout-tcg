@@ -48,6 +48,17 @@ public class PriceIngestionWorker(
         using var scope = scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IDbConnection>();
 
+        // Dapper auto-opens/closes connections it opens itself around each command, which would
+        // return this (pooled) connection to the pool - and reset its session, releasing the
+        // advisory lock - between the acquire and the actual work. Opening it explicitly here
+        // keeps the SAME session (and lock) alive across acquire -> RunOnceAsync -> unlock; Dapper
+        // only auto-closes connections it had to open itself, so an already-open connection is
+        // left open by every command that follows. Disposal is still handled by the scope.
+        if (db is Npgsql.NpgsqlConnection npg && npg.State != ConnectionState.Open)
+        {
+            await npg.OpenAsync(ct);
+        }
+
         var acquired = await db.ExecuteScalarAsync<bool>(
             new CommandDefinition(
                 "SELECT pg_try_advisory_lock(@key)",
@@ -111,18 +122,25 @@ public class PriceIngestionWorker(
         if (price is null)
             return;
 
-        var latestPrice = await priceRepo.GetLatestPriceAsync(watchedCard.CardId, ct);
+        // watchedCard.CardId is Guid.Empty for rows created via PriceAlertCreatedConsumer, which
+        // doesn't know Pricing's real Guid. Fall back to a stable, deterministic Guid derived from
+        // ProviderCardId so every watched card still keys to a distinct, consistent identity.
+        var cardId = watchedCard.CardId != Guid.Empty
+            ? watchedCard.CardId
+            : DeterministicGuid.From(watchedCard.ProviderCardId);
+
+        var latestPrice = await priceRepo.GetLatestPriceAsync(cardId, ct);
         if (latestPrice == price.Value)
             return;
 
         var snapshot = PriceSnapshot.Create(
-            watchedCard.CardId, price.Value, "USD", "tcgdex", DateTimeOffset.UtcNow);
+            cardId, price.Value, "USD", "tcgdex", DateTimeOffset.UtcNow);
         await priceRepo.AddAsync(snapshot, ct);
 
         await publisher.Publish(new CardPriceUpdatedEvent(
             Guid.NewGuid(),
             DateTime.UtcNow,
-            watchedCard.CardId,
+            cardId,
             watchedCard.ProviderCardId,
             "tcgdex",
             price.Value,

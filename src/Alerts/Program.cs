@@ -62,6 +62,7 @@ app.MapPost("/alerts", async (
         await repo.AddAsync(alert, ct);
         await publisher.Publish(new PriceAlertCreatedEvent(
             Guid.NewGuid(), DateTime.UtcNow, alert.Id, alert.ProviderCardId), ct);
+        await repo.SaveChangesAsync(ct);
         return Results.Created($"/alerts/{alert.Id}", alert.ToResponse());
     }
     catch (ArgumentException ex)
@@ -90,6 +91,7 @@ app.MapDelete("/alerts/{id:guid}", async (
     await repo.DeleteAsync(alert, ct);
     await publisher.Publish(new PriceAlertDeletedEvent(
         Guid.NewGuid(), DateTime.UtcNow, alert.Id, alert.ProviderCardId), ct);
+    await repo.SaveChangesAsync(ct);
     return Results.NoContent();
 });
 
