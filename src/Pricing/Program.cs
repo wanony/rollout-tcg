@@ -1,10 +1,14 @@
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using TCGTrading.Pricing.Application.DTOs;
+using TCGTrading.SharedKernel.Contracts;
 using TCGTrading.SharedKernel.Infrastructure.Telemetry;
 using TCGTrading.Pricing.Application.Interfaces;
 using TCGTrading.Pricing.Domain.Entities;
 using TCGTrading.Pricing.Domain.Enums;
+using TCGTrading.Pricing.Infrastructure.Messaging;
 using TCGTrading.Pricing.Infrastructure.Persistence;
 using TCGTrading.Pricing.Infrastructure.Seed;
 using TCGTrading.Pricing.Infrastructure.Telemetry;
@@ -22,6 +26,8 @@ builder.Services.AddOpenTelemetry()
 
 builder.Services.AddSingleton<IPricingTelemetry, PricingTelemetry>();
 builder.AddPriceHistory();
+builder.AddOutboxPersistence();
+builder.AddMessaging();
 
 var app = builder.Build();
 
@@ -33,6 +39,9 @@ using (var scope = app.Services.CreateScope())
     var repo = scope.ServiceProvider.GetRequiredService<IPriceRepository>();
     if (!await repo.HasAnyAsync())
         await PriceSeed.SeedAsync(repo);
+
+    var outboxDb = scope.ServiceProvider.GetRequiredService<PricingOutboxDbContext>();
+    await outboxDb.Database.MigrateAsync();
 }
 
 app.MapPrometheusScrapingEndpoint();
@@ -42,6 +51,7 @@ app.MapPost("/prices/{cardId:guid}", async (
     Guid cardId,
     RecordPriceRequest request,
     IPriceRepository repo,
+    IPublishEndpoint publisher,
     CancellationToken ct) =>
 {
     if (request.Price <= 0)
@@ -53,6 +63,11 @@ app.MapPost("/prices/{cardId:guid}", async (
     var snapshot = PriceSnapshot.Create(
         cardId, request.Price, currency, source, DateTimeOffset.UtcNow);
     await repo.AddAsync(snapshot, ct);
+
+    // ponytail: low/high == market for now; populate real low/high when TCGdex client lands (Task 7).
+    await publisher.Publish(new CardPriceUpdatedEvent(
+        Guid.NewGuid(), DateTime.UtcNow, cardId, request.ProviderCardId ?? "", "tcgdex",
+        request.Price, request.Price, request.Price), ct);
 
     return Results.Created(
         $"/prices/{cardId}/history",
