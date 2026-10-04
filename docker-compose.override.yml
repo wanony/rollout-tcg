@@ -3,6 +3,10 @@ services:
   postgres:
     environment:
       POSTGRES_PASSWORD: dev
+    # Host 5432 is often taken by another project's DB locally; the app only needs
+    # postgres on the docker network, so remap the host publish to avoid the clash.
+    ports: !override
+      - "5434:5432"
   rabbitmq:
     environment:
       RABBITMQ_DEFAULT_PASS: dev
